@@ -1,0 +1,293 @@
+<html>
+	<head>
+		<title>MTL311</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+		<script type="text/javascript">
+			function getLocation() {
+				return new Promise(function(resolve,reject) {
+					if (navigator.geolocation) {
+						navigator.geolocation.getCurrentPosition(resolve, function(error) {
+							switch(error.code) {
+								case error.PERMISSION_DENIED:
+									reject(Error("User denied the request for Geolocation."));
+									break;
+								case error.POSITION_UNAVAILABLE:
+									reject(Error("Location information is unavailable."));
+									break;
+								case error.TIMEOUT:
+									reject(Error("The request to get user location timed out."));
+									break;
+								case error.UNKNOWN_ERROR:
+									reject(Error("An unknown error occurred."));
+									break;
+							}
+						});
+					} else {
+						reject(Error("Not supported"));
+					}
+				});
+			}
+			function stepChange(i,j) {
+				$stepI = $("#steps > li:nth-child("+i+")");
+				$stepJ = $("#steps > li:nth-child("+j+")");
+				$stepI.addClass("done");
+				$stepJ.removeClass("disabled");
+			}
+			$(document).ready(function() {
+				var $steps = $("#steps");
+				var $picInput = $("#take-picture");
+				var $locationButton = $("#pin-location");
+				var $locationInput = $("#location");
+				var mapCanvasId = "map-canvas";
+				var $mapCanvas = $("#" + mapCanvasId);
+				var $mapOverlay = $("#map-overlay");
+				var $mapDone = $("#map-done");
+				var $mapCancel = $("#map-cancel");
+				var $textArea = $("#text");
+				var $submitButton = $("#submit");
+				$picInput.change(function() {
+					stepChange(1,2);
+					$locationButton.attr("disabled",false);
+				});
+				var showMap = function(location,zoom) {
+					$steps.css("display","none");
+					$mapCanvas.css("display","");
+					$mapOverlay.css("display","");
+					$mapDone.unbind();
+					$mapCancel.unbind();
+					var center = new google.maps.LatLng(location.coords.latitude,location.coords.longitude);
+					var mapOptions = {
+						center: center,
+						zoom: zoom
+					};
+					var map = new google.maps.Map(document.getElementById(mapCanvasId),mapOptions);
+					var mapZoomed = function(zoom) {
+						if (zoom > 17) {
+							$mapDone.removeClass("disabled");
+							$mapDone.attr("disabled",false);
+						}else {
+							$mapDone.addClass("disabled");
+							$mapDone.attr("disabled",true);
+						}
+					}
+					mapZoomed(zoom);
+					map.addListener("zoom_changed",function() {
+						map.setCenter(center);
+						mapZoomed(map.getZoom());
+					});
+					map.addListener("dragend",function() {
+						center = map.getCenter();
+					});
+					var storeLocation = function() {
+						var center = map.getCenter();
+						var string = center.lat() + "," + center.lng() + "," + map.getZoom();
+						$locationInput.val(string);
+					};
+					$mapDone.click(function() {
+						stepChange(2,3);
+						storeLocation();
+						$textArea.attr("disabled",false);
+						$submitButton.attr("disabled",false);
+						$steps.css("display","");
+						$mapCanvas.css("display","none");
+						$mapOverlay.css("display","none");
+						$textArea.focus();
+					});
+					$mapCancel.click(function() {
+						storeLocation();
+						$steps.css("display","");
+						$mapCanvas.css("display","none");
+						$mapOverlay.css("display","none");
+					});
+				};
+				$locationButton.click(function() {
+					var locationInfo = ($locationInput.val() + "").split(",");
+					if (locationInfo.length === 3) {
+						var lat = locationInfo[0]*1;
+						var lng = locationInfo[1]*1;
+						var zoom = locationInfo[2]*1;
+						showMap({coords:{latitude:lat,longitude:lng}},zoom);
+					}else {
+						getLocation().then(function(location) {
+							showMap(location,20);
+						},function() {
+							showMap({coords:{latitude:45.501926,longitude:-73.563103}},8)
+						});
+					}
+				});
+			});
+		</script>
+		<style type="text/css">
+			body, html {
+				padding:0px;
+				margin:0px; 
+				font-family:sans-serif;
+				font-size:15pt;
+			}
+			#map-overlay {
+				pointer-events:none;
+			}
+			#map-canvas {
+				position:fixed;
+				top:0px;
+				left:0px;
+				width:100%;
+				height:100%;
+			}
+			#map-pin {
+				position:fixed;
+				top:50%;
+				left:50%;
+				-ms-transform: translate(-50%, -50%); /* IE 9 */
+   				-webkit-transform: translate(-50%, -50%); /* Safari */
+    			transform: translate(-50%, -50%);
+				width:100px;
+				height:100px;
+				text-align:center;
+				background-image:url(pin.png);
+				background-repeat:no-repeat;
+				background-position:top;
+				background-size:auto 50%;
+			}
+			#map-buttons {
+				position:fixed;
+				bottom:10px;
+				left:0px;
+				width:100%;
+				text-align:center;
+			}
+			#map-buttons > button {
+				pointer-events:all;
+			}
+			#steps {
+				display:block;
+				padding:0px;
+				margin:0px;
+				text-align:center;
+				margin-top:50px;
+			}
+			#steps > li {
+				position:relative;
+				list-style-type: none;
+				width:240px;
+				margin:auto;
+				margin-bottom:5px;
+				padding:10px;
+				border-radius:5px;
+				color:white;
+				text-align:left;
+				padding-left:50px;
+			}
+			#steps > li:before {
+				position:absolute;
+				content:"";
+				top:50%;
+				-ms-transform: translate(0, -50%); /* IE 9 */
+   				-webkit-transform: translate(0, -50%); /* Safari */
+    			transform: translate(0, -50%);
+				left:6px;
+				width:32px;
+				height:32px;
+				line-height:32px;
+				border-radius:18px;
+				border-style:solid;
+				border-color:white;
+				border-width:2px;
+				text-align:center;
+			}
+			#steps > li:nth-child(1) {
+				background:#F2385A;
+			}
+			#steps > li:nth-child(1):before {
+				content:"1";
+			}
+			#steps > li.done:nth-child(1):before {
+				background:white;
+				color:#F2385A;
+			}
+			#steps > li:nth-child(2) {
+				background:#596AD5;
+			}
+			#steps > li:nth-child(2):before {
+				content:"2";
+			}
+			#steps > li.disabled:nth-child(2):before {
+				opacity:0.3;
+			}
+			#steps > li.done:nth-child(2):before {
+				background:white;
+				color:#596AD5;
+			}
+			#steps > li:nth-child(3) {
+				background:#16BBFF;
+			}
+			#steps > li:nth-child(3):before {
+				content:"3";
+			}
+			#steps > li.disabled:nth-child(3):before {
+				opacity:0.3;
+			}
+			button, textarea {
+				border-style:solid;
+				border-color:white;
+				border-width:2px;
+				border-radius:3px;
+				background:transparent;
+				color:white;
+			}
+			textarea {
+				font-size:12pt;
+			}
+			::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+				color:    white;
+				opacity:  0.5;
+			}
+			:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+				color:    white;
+				opacity:  0.5;
+			}
+			::-moz-placeholder { /* Mozilla Firefox 19+ */
+				color:    white;
+				opacity:  0.5;
+			}
+			:-ms-input-placeholder { /* Internet Explorer 10-11 */
+				color:    white;
+				opacity:  0.5;
+			}
+			button {
+				cursor:pointer;
+				font-size:15pt;
+			}
+			button:disabled, textarea:disabled {
+				opacity:0.5;
+				cursor:default;
+			}
+			#map-done, #map-cancel {
+				background:#596AD5;
+				padding:10px;
+				border-radius:8px;
+			}
+			#map-done {
+			}
+			#map-done.disabled:after {
+				content: " (zoom in more)"
+			}
+		</style>
+	</head>
+	<body>
+		<ul id="steps">
+			<li>Take or upload a picture <input type="file" id="take-picture" accept="image/*"></li>
+			<li class="disabled"><button id="pin-location" disabled>Pin your location</button> <input type="hidden" id="location"></li>
+			<li class="disabled"><textarea id="text" placeholder="Write something (optional)" disabled></textarea><br/><button id="submit" disabled>Submit</button></li>
+		</ul>
+		<div id="map-canvas" style="display:none"></div>
+		<div id="map-overlay" style="display:none">
+			<div id="map-pin"></div>
+			<div id="map-buttons">
+				<button id="map-done" class="disabled" disabled>Done</button>
+				<button id="map-cancel">Cancel</button>
+			<div>
+		</div>
+	</body>
+</html>
