@@ -1,0 +1,24 @@
+<html>
+	<head>
+    	<meta charset="utf-8" />
+		<title>MTL311</title>
+    	<link rel="stylesheet" type="text/css" href="style.css"/>
+	<body>
+	</head>
+		<ul id="steps">
+			<li>Take or upload a picture <input type="file" id="take-picture" accept="image/*"></li>
+			<li class="disabled"><button id="pin-location" disabled>Pin your location</button> <input type="hidden" id="location"></li>
+			<li class="disabled"><textarea id="text" placeholder="Write something (optional)" disabled></textarea><br/><button id="submit" disabled>Submit</button></li>
+		</ul>
+		<div id="map-canvas" style="display:none"></div>
+		<div id="map-overlay" style="display:none">
+			<div id="map-pin"></div>
+			<div id="map-buttons">
+				<button id="map-done" class="disabled" disabled>Done</button>
+				<button id="map-cancel">Cancel</button>
+			<div>
+		</div>
+		<script src="bundle.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgRtDIBs9J-mjwa1lHWIj_ZQXP0Flt7F4&callback=initedGoogleMaps" async defer></script>
+	</body>
+</html>

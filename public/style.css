@@ -1,0 +1,154 @@
+body, html {
+	padding:0px;
+	margin:0px; 
+	font-family:sans-serif;
+	font-size:15pt;
+}
+#map-overlay {
+	pointer-events:none;
+}
+#map-canvas {
+	position:fixed;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+}
+#map-pin {
+	position:fixed;
+	top:50%;
+	left:50%;
+	-ms-transform: translate(-50%, -50%); /* IE 9 */
+		-webkit-transform: translate(-50%, -50%); /* Safari */
+	transform: translate(-50%, -50%);
+	width:100px;
+	height:100px;
+	text-align:center;
+	background-image:url(pin.png);
+	background-repeat:no-repeat;
+	background-position:top;
+	background-size:auto 50%;
+}
+#map-buttons {
+	position:fixed;
+	bottom:10px;
+	left:0px;
+	width:100%;
+	text-align:center;
+}
+#map-buttons > button {
+	pointer-events:all;
+}
+#steps {
+	display:block;
+	padding:0px;
+	margin:0px;
+	text-align:center;
+	margin-top:50px;
+}
+#steps > li {
+	position:relative;
+	list-style-type: none;
+	width:240px;
+	margin:auto;
+	margin-bottom:5px;
+	padding:10px;
+	border-radius:5px;
+	color:white;
+	text-align:left;
+	padding-left:50px;
+}
+#steps > li:before {
+	position:absolute;
+	content:"";
+	top:50%;
+	-ms-transform: translate(0, -50%); /* IE 9 */
+		-webkit-transform: translate(0, -50%); /* Safari */
+	transform: translate(0, -50%);
+	left:6px;
+	width:32px;
+	height:32px;
+	line-height:32px;
+	border-radius:18px;
+	border-style:solid;
+	border-color:white;
+	border-width:2px;
+	text-align:center;
+}
+#steps > li:nth-child(1) {
+	background:#F2385A;
+}
+#steps > li:nth-child(1):before {
+	content:"1";
+}
+#steps > li.done:nth-child(1):before {
+	background:white;
+	color:#F2385A;
+}
+#steps > li:nth-child(2) {
+	background:#596AD5;
+}
+#steps > li:nth-child(2):before {
+	content:"2";
+}
+#steps > li.disabled:nth-child(2):before {
+	opacity:0.3;
+}
+#steps > li.done:nth-child(2):before {
+	background:white;
+	color:#596AD5;
+}
+#steps > li:nth-child(3) {
+	background:#16BBFF;
+}
+#steps > li:nth-child(3):before {
+	content:"3";
+}
+#steps > li.disabled:nth-child(3):before {
+	opacity:0.3;
+}
+button, textarea {
+	border-style:solid;
+	border-color:white;
+	border-width:2px;
+	border-radius:3px;
+	background:transparent;
+	color:white;
+}
+textarea {
+	font-size:12pt;
+}
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+	color:    white;
+	opacity:  0.5;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+	color:    white;
+	opacity:  0.5;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+	color:    white;
+	opacity:  0.5;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+	color:    white;
+	opacity:  0.5;
+}
+button {
+	cursor:pointer;
+	font-size:15pt;
+}
+button:disabled, textarea:disabled {
+	opacity:0.5;
+	cursor:default;
+}
+#map-done, #map-cancel {
+	background:#596AD5;
+	padding:10px;
+	border-radius:8px;
+}
+#map-done {
+}
+#map-done.disabled:after {
+	content: " (zoom in more)"
+}
