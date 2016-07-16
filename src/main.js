@@ -71,6 +71,40 @@ function geterr(data) {
   return !def(str) ? undefined : err(str);
 }
 
+function projf() {
+  var args = Array.prototype.slice.call(arguments);
+  var f = args[0];
+  var globalArray = args.slice(1);
+  return function() {
+    var args = Array.prototype.slice.call(arguments);
+    var array = globalArray.slice();
+    for (var i=0; i<array.length; i+=1) {
+      if (!def(array[i])) {
+        array[i] = args.shift();
+      }
+    }
+    array = array.concat(args);
+    return f.apply(this,array);
+  }
+}
+
+function projff() {
+  var args = Array.prototype.slice.call(arguments);
+  var f = args[0];
+  var globalArray = args.slice(1);
+  return function() {
+    var args = Array.prototype.slice.call(arguments);
+    var array = globalArray.map(x=>(def(x) ? x() : undefined));
+    for (var i=0; i<array.length; i+=1) {
+      if (!def(array[i])) {
+        array[i] = args.shift();
+      }
+    }
+    array = array.concat(args);
+    return f.apply(this,array);
+  }
+}
+
 //Object utilities
 function mutate(object,newValues) {
   var copy = {};
@@ -311,13 +345,10 @@ const PictureStep = React.createClass({
 });
 
 const LocationStep = React.createClass({
-  clickedLocationButton: function(event) {
-    event.preventDefault();
-    this.props.clickedLocationButton(event,this.props.map);
-  },
   render: function() {
+    var getMap = ()=>(this.props.map);
     return (<li className={stepClasses(this)}>
-      <button id="pin-location" disabled={!this.props.active} onClick={this.clickedLocationButton}>Pin your location</button>
+      <button id="pin-location" disabled={!this.props.active} onClick={projff(this.clickedLocationButton,undefined,getMap)}>Pin your location</button>
     </li>);
   }
 });
