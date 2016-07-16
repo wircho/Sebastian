@@ -139,6 +139,42 @@
 	  return !def(str) ? undefined : err(str);
 	}
 
+	function projf() {
+	  var args = Array.prototype.slice.call(arguments);
+	  var f = args[0];
+	  var globalArray = args.slice(1);
+	  return function () {
+	    var args = Array.prototype.slice.call(arguments);
+	    var array = globalArray.slice();
+	    for (var i = 0; i < array.length; i += 1) {
+	      if (!def(array[i])) {
+	        array[i] = args.shift();
+	      }
+	    }
+	    array = array.concat(args);
+	    return f.apply(this, array);
+	  };
+	}
+
+	function projff() {
+	  var args = Array.prototype.slice.call(arguments);
+	  var f = args[0];
+	  var globalArray = args.slice(1);
+	  return function () {
+	    var args = Array.prototype.slice.call(arguments);
+	    var array = globalArray.map(function (x) {
+	      return def(x) ? x() : undefined;
+	    });
+	    for (var i = 0; i < array.length; i += 1) {
+	      if (!def(array[i])) {
+	        array[i] = args.shift();
+	      }
+	    }
+	    array = array.concat(args);
+	    return f.apply(this, array);
+	  };
+	}
+
 	//Object utilities
 	function mutate(object, newValues) {
 	  var copy = {};
@@ -386,17 +422,25 @@
 	  }
 	});
 
-	function stepClasses(element) {
-	  return classNames({ disabled: !element.props.active, done: element.props.done });
-	}
+	var Step = _react2.default.createClass({
+	  displayName: 'Step',
+
+	  render: function render() {
+	    return _react2.default.createElement(
+	      'li',
+	      { className: classNames({ disabled: !this.props.active, done: this.props.done }) },
+	      this.props.children
+	    );
+	  }
+	});
 
 	var PictureStep = _react2.default.createClass({
 	  displayName: 'PictureStep',
 
 	  render: function render() {
 	    return _react2.default.createElement(
-	      'li',
-	      { className: stepClasses(this) },
+	      Step,
+	      { active: this.props.active, done: this.props.done },
 	      'Take or upload a picture ',
 	      _react2.default.createElement('input', { type: 'file', id: 'take-picture', accept: 'image/*', onChange: this.props.selectedPicture })
 	    );
@@ -406,17 +450,18 @@
 	var LocationStep = _react2.default.createClass({
 	  displayName: 'LocationStep',
 
-	  clickedLocationButton: function clickedLocationButton(event) {
-	    event.preventDefault();
-	    this.props.clickedLocationButton(event, this.props.map);
-	  },
 	  render: function render() {
+	    var _this = this;
+
+	    var clickedLocationButton = projff(this.props.clickedLocationButton, undefined, function () {
+	      return _this.props.map;
+	    });
 	    return _react2.default.createElement(
-	      'li',
-	      { className: stepClasses(this) },
+	      Step,
+	      { active: this.props.active, done: this.props.done },
 	      _react2.default.createElement(
 	        'button',
-	        { id: 'pin-location', disabled: !this.props.active, onClick: this.clickedLocationButton },
+	        { id: 'pin-location', disabled: !this.props.active, onClick: clickedLocationButton },
 	        'Pin your location'
 	      )
 	    );
@@ -433,8 +478,8 @@
 	  },
 	  render: function render() {
 	    return _react2.default.createElement(
-	      'li',
-	      { className: stepClasses(this) },
+	      Step,
+	      { active: this.props.active, done: this.props.done },
 	      _react2.default.createElement('textarea', { id: 'text', placeholder: 'Write something (optional)', disabled: !this.props.active }),
 	      _react2.default.createElement('br', null),
 	      _react2.default.createElement(

@@ -332,24 +332,26 @@ const Steps = React.createClass({
   }
 });
 
-function stepClasses(element) {
-  return classNames({disabled:!element.props.active,done:element.props.done});
-}
+const Step = React.createClass({
+  render: function() {
+    return (<li className={classNames({disabled:!this.props.active,done:this.props.done})}>{this.props.children}</li>);
+  }
+})
 
 const PictureStep = React.createClass({
   render: function() {
-    return (<li className={stepClasses(this)}>
+    return (<Step active={this.props.active} done={this.props.done}>
       Take or upload a picture <input type="file" id="take-picture" accept="image/*" onChange={this.props.selectedPicture}/>
-    </li>);
+    </Step>);
   }
 });
 
 const LocationStep = React.createClass({
   render: function() {
     var clickedLocationButton = projff(this.props.clickedLocationButton,undefined,()=>(this.props.map));
-    return (<li className={stepClasses(this)}>
+    return (<Step active={this.props.active} done={this.props.done}>
       <button id="pin-location" disabled={!this.props.active} onClick={clickedLocationButton}>Pin your location</button>
-    </li>);
+    </Step>);
   }
 });
 
@@ -360,10 +362,10 @@ const MessageStep = React.createClass({
     }
   },
   render: function() {
-    return (<li className={stepClasses(this)}>
+    return (<Step active={this.props.active} done={this.props.done}>
       <textarea id="text" placeholder="Write something (optional)" disabled={!this.props.active}></textarea><br/>
       <button id="submit" disabled={!this.props.active}>Submit</button>
-    </li>);
+    </Step>);
   }
 });
 
