@@ -346,9 +346,9 @@ const PictureStep = React.createClass({
 
 const LocationStep = React.createClass({
   render: function() {
-    var getMap = ()=>(this.props.map);
+    var clickedLocationButton = projff(this.props.clickedLocationButton,undefined,()=>(this.props.map));
     return (<li className={stepClasses(this)}>
-      <button id="pin-location" disabled={!this.props.active} onClick={projff(this.clickedLocationButton,undefined,getMap)}>Pin your location</button>
+      <button id="pin-location" disabled={!this.props.active} onClick={clickedLocationButton}>Pin your location</button>
     </li>);
   }
 });
