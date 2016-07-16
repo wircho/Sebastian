@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import Immutable from 'immutable'
+var classNames = require('classnames');
 import $ from 'jquery'
 
 //Google maps API Keys
@@ -18,6 +19,10 @@ function pad(num, size) {
 
 function def(x) {
   return typeof x !== 'undefined';
+}
+
+function fallback(x,y) {
+  return def(x) ? x : y;
 }
 
 function err(error) {
@@ -113,27 +118,291 @@ function rotate(array,amount) {
 function getLocation() {
   return new Promise(function(resolve,reject) {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(resolve, function(error) {
+      navigator.geolocation.getCurrentPosition(function(location) {
+        resolve({latitude:location.coords.latitude,longitude:location.coords.longitude});
+      },
+      function(error) {
         switch(error.code) {
           case error.PERMISSION_DENIED:
-            reject(Error("User denied the request for Geolocation."));
+            reject(err("User denied the request for Geolocation."));
             break;
           case error.POSITION_UNAVAILABLE:
-            reject(Error("Location information is unavailable."));
+            reject(err("Location information is unavailable."));
             break;
           case error.TIMEOUT:
-            reject(Error("The request to get user location timed out."));
+            reject(err("The request to get user location timed out."));
             break;
           case error.UNKNOWN_ERROR:
-            reject(Error("An unknown error occurred."));
+            reject(err("An unknown error occurred."));
             break;
         }
       });
     } else {
-      reject(Error("Not supported"));
+      reject(err("Not supported"));
     }
   });
 }
+
+// Constants
+const STEPS = {
+  NONE:0,
+  PICTURE:1,
+  LOCATION:2,
+  MESSAGE:3
+}
+
+const ACTIONS = {
+  FINISH_STEP:"FINISH_STEP", // step: Step.SOMETHING
+  DISPLAY_MAP:"DISPLAY_MAP", // No parameters
+  HIDE_MAP:"HIDE_MAP", // No parameters
+  UPDATE_MAP:"UPDATE_MAP", // latitude:, longitude:, zoom:
+}
+
+const MONTREAL_LOCATION = {latitude:45.501926,longitude:-73.563103,zoom:8};
+
+// Redux model
+/*
+{
+  step:STEPS.SOMETHING,
+  map:{
+    visible:,
+    location:{latitude:,longitude:,zoom:},
+    savedLocation:{latitude:,longitude:,zoom:}
+  }
+  text:"..."
+}
+*/
+
+// Actions creators
+const finishStep = step=>({type:ACTIONS.FINISH_STEP,step});
+const displayMap = ()=>({type:ACTIONS.DISPLAY_MAP});
+const hideMap = save=>({type:ACTIONS.HIDE_MAP,save});
+const updateMap = location=>({type:ACTIONS.UPDATE_MAP,location});
+
+// Reducer
+const initialState = {step:STEPS.NONE}
+function app(state,action) {
+  if (!def(state)) {
+    return initialState
+  }
+  switch (action.type) {
+    case ACTIONS.FINISH_STEP:
+      if (action.step > state.step) {
+        return mutate(state,{step:action.step});
+      }else {
+        return state;
+      }
+      break;
+    case ACTIONS.DISPLAY_MAP:
+      return mutate(state,{map:mutate(fallback(state.map,{}),{visible:true})});
+      break;
+    case ACTIONS.HIDE_MAP:
+      var location = state.map.location;
+      var savedLocation = state.map.savedLocation;
+      if (action.save) {
+        return mutate(state,{map:mutate(fallback(state.map,{}),{visible:false,location,savedLocation:location})});
+      }else if (def(savedLocation)){
+        return mutate(state,{map:mutate(fallback(state.map,{}),{visible:false,location:savedLocation,savedLocation})});
+      }else {
+        return mutate(state,{map:mutate(remove(fallback(state.map,{}),["location","savedLocation"]),{visible:false})});
+      }
+      break;
+    case ACTIONS.UPDATE_MAP:
+      var oldLocation = def(state.map) ? fallback(state.map.location,{}) : {};
+      var location = mutate(oldLocation,action.location);
+      return mutate(state,{map:mutate(fallback(state.map,{}),{location})});
+      break;
+  }
+}
+
+// Map state to props
+const mapStateToProps = state=>state;
+
+const mapDispatchToProps = (dispatch) => ({
+  selectedPicture: (event) => {
+    event.preventDefault();
+    dispatch(finishStep(STEPS.PICTURE));
+  },
+  clickedLocationButton: (event,map) => {
+    event.preventDefault();
+    if (def(map) && def(map.location)) { // There is already some map info
+      dispatch(displayMap());
+    } else { // There is 
+      getLocation().then(function(location) {
+        dispatch(updateMap(mutate(location,{zoom:20})));
+        dispatch(displayMap());
+      },function() {
+        dispatch(updateMap(MONTREAL_LOCATION));
+        dispatch(displayMap());
+      });
+    }
+  },
+  clickedMapCancelButton: (event) => {
+    event.preventDefault();
+    dispatch(hideMap(false));
+  },
+  clickedMapDoneButton: (event) => {
+    event.preventDefault();
+    dispatch(finishStep(STEPS.LOCATION));
+    dispatch(hideMap(true));
+  },
+  mapChanged: (location) => {
+    dispatch(updateMap(location));
+  }
+});
+
+//React classes
+const App = React.createClass({
+  render: function() {
+    return (<div>
+      <Steps
+        step={this.props.step}
+        map={this.props.map}
+        text={this.props.text}
+        selectedPicture={this.props.selectedPicture}
+        clickedLocationButton={this.props.clickedLocationButton}
+      />
+      <MapCanvas
+        map={this.props.map}
+        mapChanged={this.props.mapChanged}
+      />
+      <MapOverlay
+        map={this.props.map}
+        clickedMapCancelButton={this.props.clickedMapCancelButton}
+        clickedMapDoneButton={this.props.clickedMapDoneButton}
+      />
+    </div>);
+  }
+});
+
+const Steps = React.createClass({
+  render: function() {
+    var nextStep = this.props.step + 1;
+    return (<ul id="steps" className={(def(this.props.map) && this.props.map.visible) ? "hidden" : "block"}>
+      <PictureStep 
+        active={nextStep >= STEPS.PICTURE}
+        done={nextStep > STEPS.PICTURE} 
+        selectedPicture={this.props.selectedPicture}
+      />
+      <LocationStep
+        active={nextStep >= STEPS.LOCATION}
+        done={nextStep > STEPS.LOCATION}
+        map={this.props.map}
+        clickedLocationButton={this.props.clickedLocationButton}
+      />
+      <MessageStep
+        active={nextStep >= STEPS.MESSAGE}
+        done={nextStep > STEPS.MESSAGE}
+      />
+    </ul>);
+  }
+});
+
+function stepClasses(element) {
+  return classNames({disabled:!element.props.active,done:element.props.done});
+}
+
+const PictureStep = React.createClass({
+  render: function() {
+    return (<li className={stepClasses(this)}>
+      Take or upload a picture <input type="file" id="take-picture" accept="image/*" onChange={this.props.selectedPicture}/>
+    </li>);
+  }
+});
+
+const LocationStep = React.createClass({
+  clickedLocationButton: function(event) {
+    event.preventDefault();
+    this.props.clickedLocationButton(event,this.props.map);
+  },
+  render: function() {
+    return (<li className={stepClasses(this)}>
+      <button id="pin-location" disabled={!this.props.active} onClick={this.clickedLocationButton}>Pin your location</button>
+    </li>);
+  }
+});
+
+const MessageStep = React.createClass({
+  componentDidUpdate: function(prevProps) {
+    if (!prevProps.active && this.props.active) {
+      $("#text").focus();
+    }
+  },
+  render: function() {
+    return (<li className={stepClasses(this)}>
+      <textarea id="text" placeholder="Write something (optional)" disabled={!this.props.active}></textarea><br/>
+      <button id="submit" disabled={!this.props.active}>Submit</button>
+    </li>);
+  }
+});
+
+const MapCanvas = React.createClass({
+  componentDidUpdate: function(prevProps) {
+    if (def(prevProps.map) && prevProps.map.visible) {
+      return;
+    }
+    if (def(this.props.map) && this.props.map.visible) {
+      var center = new google.maps.LatLng(this.props.map.location.latitude,this.props.map.location.longitude);
+      var zoom = this.props.map.location.zoom;
+      var mapOptions = {
+        center: center,
+        zoom: zoom
+      };
+      var map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
+      map.addListener("zoom_changed",function() {
+        map.setCenter(center);
+        this.props.mapChanged({zoom:map.getZoom()});
+      }.bind(this));
+      map.addListener("dragend",function() {
+        center = map.getCenter();
+        this.props.mapChanged({latitude:center.lat(),longitude:center.lng()});
+      }.bind(this));
+    }
+  },
+  render: function() {
+    if (def(this.props.map) && this.props.map.visible) {
+      return <div id="map-canvas"/>;
+    }else {
+      return false;
+    }
+  }
+});
+
+const MapOverlay = React.createClass({
+  render: function() {
+    if (def(this.props.map) && this.props.map.visible) {
+      var disabled = this.props.map.location.zoom <= 17;
+      return (<div id="map-overlay">
+        <div id="map-pin"></div>
+        <div id="map-buttons">
+          <button
+            id="map-done"
+            className={disabled ? "disabled" : undefined}
+            disabled={disabled}
+            onClick={this.props.clickedMapDoneButton}
+          >Done</button>
+          <button
+            id="map-cancel"
+            onClick={this.props.clickedMapCancelButton}
+          >Cancel</button>
+        </div>
+      </div>);
+    }else {
+      return false;
+    }
+  }
+});
+
+//React / Redux connection and render
+const store = createStore(app);
+const VisibleApp = connect(mapStateToProps,mapDispatchToProps)(App);
+window.initedGoogleMaps = function() {
+  ReactDOM.render(
+    <Provider store={store}><VisibleApp /></Provider>,
+    document.getElementById('content')
+  );
+};
+/*
 
 // App
 function stepChange(i,j) {
@@ -228,3 +497,5 @@ window.initedGoogleMaps = function() {
     });
   });
 };
+
+*/

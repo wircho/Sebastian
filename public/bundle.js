@@ -72,6 +72,9 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	var classNames = __webpack_require__(264);
+
+
 	//Google maps API Keys
 
 	//Utilities
@@ -84,6 +87,10 @@
 
 	function def(x) {
 	  return typeof x !== 'undefined';
+	}
+
+	function fallback(x, y) {
+	  return def(x) ? x : y;
 	}
 
 	function err(error) {
@@ -179,121 +186,446 @@
 	function getLocation() {
 	  return new _promise2.default(function (resolve, reject) {
 	    if (navigator.geolocation) {
-	      navigator.geolocation.getCurrentPosition(resolve, function (error) {
+	      navigator.geolocation.getCurrentPosition(function (location) {
+	        resolve({ latitude: location.coords.latitude, longitude: location.coords.longitude });
+	      }, function (error) {
 	        switch (error.code) {
 	          case error.PERMISSION_DENIED:
-	            reject(Error("User denied the request for Geolocation."));
+	            reject(err("User denied the request for Geolocation."));
 	            break;
 	          case error.POSITION_UNAVAILABLE:
-	            reject(Error("Location information is unavailable."));
+	            reject(err("Location information is unavailable."));
 	            break;
 	          case error.TIMEOUT:
-	            reject(Error("The request to get user location timed out."));
+	            reject(err("The request to get user location timed out."));
 	            break;
 	          case error.UNKNOWN_ERROR:
-	            reject(Error("An unknown error occurred."));
+	            reject(err("An unknown error occurred."));
 	            break;
 	        }
 	      });
 	    } else {
-	      reject(Error("Not supported"));
+	      reject(err("Not supported"));
 	    }
 	  });
 	}
 
-	// App
-	function stepChange(i, j) {
-	  var $stepI = (0, _jquery2.default)("#steps > li:nth-child(" + i + ")");
-	  var $stepJ = (0, _jquery2.default)("#steps > li:nth-child(" + j + ")");
-	  $stepI.addClass("done");
-	  $stepJ.removeClass("disabled");
+	// Constants
+	var STEPS = {
+	  NONE: 0,
+	  PICTURE: 1,
+	  LOCATION: 2,
+	  MESSAGE: 3
+	};
+
+	var ACTIONS = {
+	  FINISH_STEP: "FINISH_STEP", // step: Step.SOMETHING
+	  DISPLAY_MAP: "DISPLAY_MAP", // No parameters
+	  HIDE_MAP: "HIDE_MAP", // No parameters
+	  UPDATE_MAP: "UPDATE_MAP" };
+
+	var MONTREAL_LOCATION = { latitude: 45.501926, longitude: -73.563103, zoom: 8 };
+
+	// Redux model
+	/*
+	{
+	  step:STEPS.SOMETHING,
+	  map:{
+	    visible:,
+	    location:{latitude:,longitude:,zoom:},
+	    savedLocation:{latitude:,longitude:,zoom:}
+	  }
+	  text:"..."
+	}
+	*/
+
+	// Actions creators
+	var finishStep = function finishStep(step) {
+	  return { type: ACTIONS.FINISH_STEP, step: step };
+	};
+	var displayMap = function displayMap() {
+	  return { type: ACTIONS.DISPLAY_MAP };
+	};
+	var hideMap = function hideMap(save) {
+	  return { type: ACTIONS.HIDE_MAP, save: save };
+	};
+	var updateMap = function updateMap(location) {
+	  return { type: ACTIONS.UPDATE_MAP, location: location };
+	};
+
+	// Reducer
+	var initialState = { step: STEPS.NONE };
+	function app(state, action) {
+	  if (!def(state)) {
+	    return initialState;
+	  }
+	  switch (action.type) {
+	    case ACTIONS.FINISH_STEP:
+	      if (action.step > state.step) {
+	        return mutate(state, { step: action.step });
+	      } else {
+	        return state;
+	      }
+	      break;
+	    case ACTIONS.DISPLAY_MAP:
+	      return mutate(state, { map: mutate(fallback(state.map, {}), { visible: true }) });
+	      break;
+	    case ACTIONS.HIDE_MAP:
+	      var location = state.map.location;
+	      var savedLocation = state.map.savedLocation;
+	      if (action.save) {
+	        return mutate(state, { map: mutate(fallback(state.map, {}), { visible: false, location: location, savedLocation: location }) });
+	      } else if (def(savedLocation)) {
+	        return mutate(state, { map: mutate(fallback(state.map, {}), { visible: false, location: savedLocation, savedLocation: savedLocation }) });
+	      } else {
+	        return mutate(state, { map: mutate(remove(fallback(state.map, {}), ["location", "savedLocation"]), { visible: false }) });
+	      }
+	      break;
+	    case ACTIONS.UPDATE_MAP:
+	      var oldLocation = def(state.map) ? fallback(state.map.location, {}) : {};
+	      var location = mutate(oldLocation, action.location);
+	      return mutate(state, { map: mutate(fallback(state.map, {}), { location: location }) });
+	      break;
+	  }
 	}
 
-	window.initedGoogleMaps = function () {
-	  (0, _jquery2.default)(document).ready(function () {
-	    var $steps = (0, _jquery2.default)("#steps");
-	    var $picInput = (0, _jquery2.default)("#take-picture");
-	    var $locationButton = (0, _jquery2.default)("#pin-location");
-	    var $locationInput = (0, _jquery2.default)("#location");
-	    var mapCanvasId = "map-canvas";
-	    var $mapCanvas = (0, _jquery2.default)("#" + mapCanvasId);
-	    var $mapOverlay = (0, _jquery2.default)("#map-overlay");
-	    var $mapDone = (0, _jquery2.default)("#map-done");
-	    var $mapCancel = (0, _jquery2.default)("#map-cancel");
-	    var $textArea = (0, _jquery2.default)("#text");
-	    var $submitButton = (0, _jquery2.default)("#submit");
-	    $picInput.change(function () {
-	      stepChange(1, 2);
-	      $locationButton.attr("disabled", false);
-	    });
-	    var showMap = function showMap(location, zoom) {
-	      $steps.css("display", "none");
-	      $mapCanvas.css("display", "");
-	      $mapOverlay.css("display", "");
-	      $mapDone.unbind();
-	      $mapCancel.unbind();
-	      var center = new google.maps.LatLng(location.coords.latitude, location.coords.longitude);
+	// Map state to props
+	var mapStateToProps = function mapStateToProps(state) {
+	  return state;
+	};
+
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	  return {
+	    selectedPicture: function selectedPicture(event) {
+	      event.preventDefault();
+	      dispatch(finishStep(STEPS.PICTURE));
+	    },
+	    clickedLocationButton: function clickedLocationButton(event, map) {
+	      event.preventDefault();
+	      if (def(map) && def(map.location)) {
+	        // There is already some map info
+	        dispatch(displayMap());
+	      } else {
+	        // There is
+	        getLocation().then(function (location) {
+	          dispatch(updateMap(mutate(location, { zoom: 20 })));
+	          dispatch(displayMap());
+	        }, function () {
+	          dispatch(updateMap(MONTREAL_LOCATION));
+	          dispatch(displayMap());
+	        });
+	      }
+	    },
+	    clickedMapCancelButton: function clickedMapCancelButton(event) {
+	      event.preventDefault();
+	      dispatch(hideMap(false));
+	    },
+	    clickedMapDoneButton: function clickedMapDoneButton(event) {
+	      event.preventDefault();
+	      dispatch(finishStep(STEPS.LOCATION));
+	      dispatch(hideMap(true));
+	    },
+	    mapChanged: function mapChanged(location) {
+	      dispatch(updateMap(location));
+	    }
+	  };
+	};
+
+	//React classes
+	var App = _react2.default.createClass({
+	  displayName: 'App',
+
+	  render: function render() {
+	    return _react2.default.createElement(
+	      'div',
+	      null,
+	      _react2.default.createElement(Steps, {
+	        step: this.props.step,
+	        map: this.props.map,
+	        text: this.props.text,
+	        selectedPicture: this.props.selectedPicture,
+	        clickedLocationButton: this.props.clickedLocationButton
+	      }),
+	      _react2.default.createElement(MapCanvas, {
+	        map: this.props.map,
+	        mapChanged: this.props.mapChanged
+	      }),
+	      _react2.default.createElement(MapOverlay, {
+	        map: this.props.map,
+	        clickedMapCancelButton: this.props.clickedMapCancelButton,
+	        clickedMapDoneButton: this.props.clickedMapDoneButton
+	      })
+	    );
+	  }
+	});
+
+	var Steps = _react2.default.createClass({
+	  displayName: 'Steps',
+
+	  render: function render() {
+	    var nextStep = this.props.step + 1;
+	    return _react2.default.createElement(
+	      'ul',
+	      { id: 'steps', className: def(this.props.map) && this.props.map.visible ? "hidden" : "block" },
+	      _react2.default.createElement(PictureStep, {
+	        active: nextStep >= STEPS.PICTURE,
+	        done: nextStep > STEPS.PICTURE,
+	        selectedPicture: this.props.selectedPicture
+	      }),
+	      _react2.default.createElement(LocationStep, {
+	        active: nextStep >= STEPS.LOCATION,
+	        done: nextStep > STEPS.LOCATION,
+	        map: this.props.map,
+	        clickedLocationButton: this.props.clickedLocationButton
+	      }),
+	      _react2.default.createElement(MessageStep, {
+	        active: nextStep >= STEPS.MESSAGE,
+	        done: nextStep > STEPS.MESSAGE
+	      })
+	    );
+	  }
+	});
+
+	function stepClasses(element) {
+	  return classNames({ disabled: !element.props.active, done: element.props.done });
+	}
+
+	var PictureStep = _react2.default.createClass({
+	  displayName: 'PictureStep',
+
+	  render: function render() {
+	    return _react2.default.createElement(
+	      'li',
+	      { className: stepClasses(this) },
+	      'Take or upload a picture ',
+	      _react2.default.createElement('input', { type: 'file', id: 'take-picture', accept: 'image/*', onChange: this.props.selectedPicture })
+	    );
+	  }
+	});
+
+	var LocationStep = _react2.default.createClass({
+	  displayName: 'LocationStep',
+
+	  clickedLocationButton: function clickedLocationButton(event) {
+	    event.preventDefault();
+	    this.props.clickedLocationButton(event, this.props.map);
+	  },
+	  render: function render() {
+	    return _react2.default.createElement(
+	      'li',
+	      { className: stepClasses(this) },
+	      _react2.default.createElement(
+	        'button',
+	        { id: 'pin-location', disabled: !this.props.active, onClick: this.clickedLocationButton },
+	        'Pin your location'
+	      )
+	    );
+	  }
+	});
+
+	var MessageStep = _react2.default.createClass({
+	  displayName: 'MessageStep',
+
+	  componentDidUpdate: function componentDidUpdate(prevProps) {
+	    if (!prevProps.active && this.props.active) {
+	      (0, _jquery2.default)("#text").focus();
+	    }
+	  },
+	  render: function render() {
+	    return _react2.default.createElement(
+	      'li',
+	      { className: stepClasses(this) },
+	      _react2.default.createElement('textarea', { id: 'text', placeholder: 'Write something (optional)', disabled: !this.props.active }),
+	      _react2.default.createElement('br', null),
+	      _react2.default.createElement(
+	        'button',
+	        { id: 'submit', disabled: !this.props.active },
+	        'Submit'
+	      )
+	    );
+	  }
+	});
+
+	var MapCanvas = _react2.default.createClass({
+	  displayName: 'MapCanvas',
+
+	  componentDidUpdate: function componentDidUpdate(prevProps) {
+	    if (def(prevProps.map) && prevProps.map.visible) {
+	      return;
+	    }
+	    if (def(this.props.map) && this.props.map.visible) {
+	      var center = new google.maps.LatLng(this.props.map.location.latitude, this.props.map.location.longitude);
+	      var zoom = this.props.map.location.zoom;
 	      var mapOptions = {
 	        center: center,
 	        zoom: zoom
 	      };
-	      var map = new google.maps.Map(document.getElementById(mapCanvasId), mapOptions);
-	      var mapZoomed = function mapZoomed(zoom) {
+	      var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+	      map.addListener("zoom_changed", function () {
+	        map.setCenter(center);
+	        this.props.mapChanged({ zoom: map.getZoom() });
+	      }.bind(this));
+	      map.addListener("dragend", function () {
+	        center = map.getCenter();
+	        this.props.mapChanged({ latitude: center.lat(), longitude: center.lng() });
+	      }.bind(this));
+	    }
+	  },
+	  render: function render() {
+	    if (def(this.props.map) && this.props.map.visible) {
+	      return _react2.default.createElement('div', { id: 'map-canvas' });
+	    } else {
+	      return false;
+	    }
+	  }
+	});
+
+	var MapOverlay = _react2.default.createClass({
+	  displayName: 'MapOverlay',
+
+	  render: function render() {
+	    if (def(this.props.map) && this.props.map.visible) {
+	      var disabled = this.props.map.location.zoom <= 17;
+	      return _react2.default.createElement(
+	        'div',
+	        { id: 'map-overlay' },
+	        _react2.default.createElement('div', { id: 'map-pin' }),
+	        _react2.default.createElement(
+	          'div',
+	          { id: 'map-buttons' },
+	          _react2.default.createElement(
+	            'button',
+	            {
+	              id: 'map-done',
+	              className: disabled ? "disabled" : undefined,
+	              disabled: disabled,
+	              onClick: this.props.clickedMapDoneButton
+	            },
+	            'Done'
+	          ),
+	          _react2.default.createElement(
+	            'button',
+	            {
+	              id: 'map-cancel',
+	              onClick: this.props.clickedMapCancelButton
+	            },
+	            'Cancel'
+	          )
+	        )
+	      );
+	    } else {
+	      return false;
+	    }
+	  }
+	});
+
+	//React / Redux connection and render
+	var store = (0, _redux.createStore)(app);
+	var VisibleApp = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(App);
+	window.initedGoogleMaps = function () {
+	  _reactDom2.default.render(_react2.default.createElement(
+	    _reactRedux.Provider,
+	    { store: store },
+	    _react2.default.createElement(VisibleApp, null)
+	  ), document.getElementById('content'));
+	};
+	/*
+
+	// App
+	function stepChange(i,j) {
+	  var $stepI = $("#steps > li:nth-child("+i+")");
+	  var $stepJ = $("#steps > li:nth-child("+j+")");
+	  $stepI.addClass("done");
+	  $stepJ.removeClass("disabled");
+	}
+
+	window.initedGoogleMaps = function() {
+	  $(document).ready(function() {
+	    var $steps = $("#steps");
+	    var $picInput = $("#take-picture");
+	    var $locationButton = $("#pin-location");
+	    var $locationInput = $("#location");
+	    var mapCanvasId = "map-canvas";
+	    var $mapCanvas = $("#" + mapCanvasId);
+	    var $mapOverlay = $("#map-overlay");
+	    var $mapDone = $("#map-done");
+	    var $mapCancel = $("#map-cancel");
+	    var $textArea = $("#text");
+	    var $submitButton = $("#submit");
+	    $picInput.change(function() {
+	      stepChange(1,2);
+	      $locationButton.attr("disabled",false);
+	    });
+	    var showMap = function(location,zoom) {
+	      $steps.css("display","none");
+	      $mapCanvas.css("display","");
+	      $mapOverlay.css("display","");
+	      $mapDone.unbind();
+	      $mapCancel.unbind();
+	      var center = new google.maps.LatLng(location.coords.latitude,location.coords.longitude);
+	      var mapOptions = {
+	        center: center,
+	        zoom: zoom
+	      };
+	      var map = new google.maps.Map(document.getElementById(mapCanvasId),mapOptions);
+	      var mapZoomed = function(zoom) {
 	        if (zoom > 17) {
 	          $mapDone.removeClass("disabled");
-	          $mapDone.attr("disabled", false);
-	        } else {
+	          $mapDone.attr("disabled",false);
+	        }else {
 	          $mapDone.addClass("disabled");
-	          $mapDone.attr("disabled", true);
+	          $mapDone.attr("disabled",true);
 	        }
-	      };
+	      }
 	      mapZoomed(zoom);
-	      map.addListener("zoom_changed", function () {
+	      map.addListener("zoom_changed",function() {
 	        map.setCenter(center);
 	        mapZoomed(map.getZoom());
 	      });
-	      map.addListener("dragend", function () {
+	      map.addListener("dragend",function() {
 	        center = map.getCenter();
 	      });
-	      var storeLocation = function storeLocation() {
+	      var storeLocation = function() {
 	        var center = map.getCenter();
 	        var string = center.lat() + "," + center.lng() + "," + map.getZoom();
 	        $locationInput.val(string);
 	      };
-	      $mapDone.click(function () {
-	        stepChange(2, 3);
+	      $mapDone.click(function() {
+	        stepChange(2,3);
 	        storeLocation();
-	        $textArea.attr("disabled", false);
-	        $submitButton.attr("disabled", false);
-	        $steps.css("display", "");
-	        $mapCanvas.css("display", "none");
-	        $mapOverlay.css("display", "none");
+	        $textArea.attr("disabled",false);
+	        $submitButton.attr("disabled",false);
+	        $steps.css("display","");
+	        $mapCanvas.css("display","none");
+	        $mapOverlay.css("display","none");
 	        $textArea.focus();
 	      });
-	      $mapCancel.click(function () {
+	      $mapCancel.click(function() {
 	        storeLocation();
-	        $steps.css("display", "");
-	        $mapCanvas.css("display", "none");
-	        $mapOverlay.css("display", "none");
+	        $steps.css("display","");
+	        $mapCanvas.css("display","none");
+	        $mapOverlay.css("display","none");
 	      });
 	    };
-	    $locationButton.click(function () {
+	    $locationButton.click(function() {
 	      var locationInfo = ($locationInput.val() + "").split(",");
 	      if (locationInfo.length === 3) {
-	        var lat = locationInfo[0] * 1;
-	        var lng = locationInfo[1] * 1;
-	        var zoom = locationInfo[2] * 1;
-	        showMap({ coords: { latitude: lat, longitude: lng } }, zoom);
-	      } else {
-	        getLocation().then(function (location) {
-	          showMap(location, 20);
-	        }, function () {
-	          showMap({ coords: { latitude: 45.501926, longitude: -73.563103 } }, 8);
+	        var lat = locationInfo[0]*1;
+	        var lng = locationInfo[1]*1;
+	        var zoom = locationInfo[2]*1;
+	        showMap({coords:{latitude:lat,longitude:lng}},zoom);
+	      }else {
+	        getLocation().then(function(location) {
+	          showMap(location,20);
+	        },function() {
+	          showMap({coords:{latitude:45.501926,longitude:-73.563103}},8)
 	        });
 	      }
 	    });
 	  });
 	};
+
+	*/
 
 /***/ },
 /* 1 */
@@ -39455,6 +39787,60 @@
 
 	return jQuery;
 	} );
+
+
+/***/ },
+/* 264 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	  Copyright (c) 2016 Jed Watson.
+	  Licensed under the MIT License (MIT), see
+	  http://jedwatson.github.io/classnames
+	*/
+	/* global define */
+
+	(function () {
+		'use strict';
+
+		var hasOwn = {}.hasOwnProperty;
+
+		function classNames () {
+			var classes = [];
+
+			for (var i = 0; i < arguments.length; i++) {
+				var arg = arguments[i];
+				if (!arg) continue;
+
+				var argType = typeof arg;
+
+				if (argType === 'string' || argType === 'number') {
+					classes.push(arg);
+				} else if (Array.isArray(arg)) {
+					classes.push(classNames.apply(null, arg));
+				} else if (argType === 'object') {
+					for (var key in arg) {
+						if (hasOwn.call(arg, key) && arg[key]) {
+							classes.push(key);
+						}
+					}
+				}
+			}
+
+			return classes.join(' ');
+		}
+
+		if (typeof module !== 'undefined' && module.exports) {
+			module.exports = classNames;
+		} else if (true) {
+			// register as 'classnames', consistent with npm package name
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+				return classNames;
+			}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+			window.classNames = classNames;
+		}
+	}());
 
 
 /***/ }
