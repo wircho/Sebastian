@@ -289,6 +289,7 @@ const mapDispatchToProps = (dispatch) => ({
 const App = React.createClass({
   render: function() {
     return (<div>
+      <div id="header">SOMETHING MTL</div>
       <Steps
         step={this.props.step}
         map={this.props.map}
@@ -341,7 +342,7 @@ const Step = React.createClass({
 const PictureStep = React.createClass({
   render: function() {
     return (<Step active={this.props.active} done={this.props.done}>
-      Take or upload a picture <input type="file" id="take-picture" accept="image/*" onChange={this.props.selectedPicture}/>
+      <input type="file" id="take-picture" accept="image/*" onChange={this.props.selectedPicture}/>
     </Step>);
   }
 });
@@ -350,7 +351,7 @@ const LocationStep = React.createClass({
   render: function() {
     var clickedLocationButton = projff(this.props.clickedLocationButton,undefined,()=>(this.props.map));
     return (<Step active={this.props.active} done={this.props.done}>
-      <button id="pin-location" disabled={!this.props.active} onClick={clickedLocationButton}>Pin your location</button>
+      <button id="pin-location" disabled={!this.props.active} onClick={clickedLocationButton}>pin your location</button>
     </Step>);
   }
 });
@@ -363,8 +364,8 @@ const MessageStep = React.createClass({
   },
   render: function() {
     return (<Step active={this.props.active} done={this.props.done}>
-      <textarea id="text" placeholder="Write something (optional)" disabled={!this.props.active}></textarea><br/>
-      <button id="submit" disabled={!this.props.active}>Submit</button>
+      <textarea id="text" placeholder="message (optional)" disabled={!this.props.active}></textarea><br/>
+      <button id="submit" disabled={!this.props.active}>submit</button>
     </Step>);
   }
 });
@@ -394,7 +395,7 @@ const MapCanvas = React.createClass({
   },
   render: function() {
     if (def(this.props.map) && this.props.map.visible) {
-      return <div id="map-canvas"/>;
+      return <div id="map-canvas-container"><div id="map-canvas" /></div>;
     }else {
       return false;
     }

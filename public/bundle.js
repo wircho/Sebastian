@@ -375,6 +375,11 @@
 	    return _react2.default.createElement(
 	      'div',
 	      null,
+	      _react2.default.createElement(
+	        'div',
+	        { id: 'header' },
+	        'SOMETHING MTL'
+	      ),
 	      _react2.default.createElement(Steps, {
 	        step: this.props.step,
 	        map: this.props.map,
@@ -441,7 +446,6 @@
 	    return _react2.default.createElement(
 	      Step,
 	      { active: this.props.active, done: this.props.done },
-	      'Take or upload a picture ',
 	      _react2.default.createElement('input', { type: 'file', id: 'take-picture', accept: 'image/*', onChange: this.props.selectedPicture })
 	    );
 	  }
@@ -462,7 +466,7 @@
 	      _react2.default.createElement(
 	        'button',
 	        { id: 'pin-location', disabled: !this.props.active, onClick: clickedLocationButton },
-	        'Pin your location'
+	        'pin your location'
 	      )
 	    );
 	  }
@@ -480,12 +484,12 @@
 	    return _react2.default.createElement(
 	      Step,
 	      { active: this.props.active, done: this.props.done },
-	      _react2.default.createElement('textarea', { id: 'text', placeholder: 'Write something (optional)', disabled: !this.props.active }),
+	      _react2.default.createElement('textarea', { id: 'text', placeholder: 'message (optional)', disabled: !this.props.active }),
 	      _react2.default.createElement('br', null),
 	      _react2.default.createElement(
 	        'button',
 	        { id: 'submit', disabled: !this.props.active },
-	        'Submit'
+	        'submit'
 	      )
 	    );
 	  }
@@ -518,7 +522,11 @@
 	  },
 	  render: function render() {
 	    if (def(this.props.map) && this.props.map.visible) {
-	      return _react2.default.createElement('div', { id: 'map-canvas' });
+	      return _react2.default.createElement(
+	        'div',
+	        { id: 'map-canvas-container' },
+	        _react2.default.createElement('div', { id: 'map-canvas' })
+	      );
 	    } else {
 	      return false;
 	    }
