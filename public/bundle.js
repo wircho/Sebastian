@@ -258,7 +258,8 @@
 	  FINISH_STEP: "FINISH_STEP", // step: Step.SOMETHING
 	  DISPLAY_MAP: "DISPLAY_MAP", // No parameters
 	  HIDE_MAP: "HIDE_MAP", // No parameters
-	  UPDATE_MAP: "UPDATE_MAP" };
+	  UPDATE_MAP: "UPDATE_MAP", // latitude:, longitude:, zoom:
+	  ENABLE_APP: "ENABLE_APP" };
 
 	var MONTREAL_LOCATION = { latitude: 45.501926, longitude: -73.563103, zoom: 8 };
 
@@ -287,6 +288,9 @@
 	};
 	var updateMap = function updateMap(location) {
 	  return { type: ACTIONS.UPDATE_MAP, location: location };
+	};
+	var enableApp = function enableApp(enabled) {
+	  return { type: ACTIONS.ENABLE_APP, enabled: enabled };
 	};
 
 	// Reducer
@@ -322,6 +326,9 @@
 	      var location = mutate(oldLocation, action.location);
 	      return mutate(state, { map: mutate(fallback(state.map, {}), { location: location }) });
 	      break;
+	    case ACTIONS.ENABLE_APP:
+	      return mutate(state, { app_enabled: action.enabled });
+	      break;
 	  }
 	}
 
@@ -343,10 +350,13 @@
 	        dispatch(displayMap());
 	      } else {
 	        // There is
+	        dispatch(enableApp(false));
 	        getLocation().then(function (location) {
+	          dispatch(enableApp(true));
 	          dispatch(updateMap(mutate(location, { zoom: 20 })));
 	          dispatch(displayMap());
 	        }, function () {
+	          dispatch(enableApp(true));
 	          dispatch(updateMap(MONTREAL_LOCATION));
 	          dispatch(displayMap());
 	        });
@@ -374,7 +384,7 @@
 	  render: function render() {
 	    return _react2.default.createElement(
 	      'div',
-	      null,
+	      { id: 'inner-content', className: classNames({ disabled: !fallback(this.props.app_enabled, true) }) },
 	      _react2.default.createElement(
 	        'div',
 	        { id: 'header' },
@@ -503,6 +513,7 @@
 	      return;
 	    }
 	    if (def(this.props.map) && this.props.map.visible) {
+	      console.log("showing map...");
 	      var center = new google.maps.LatLng(this.props.map.location.latitude, this.props.map.location.longitude);
 	      var zoom = this.props.map.location.zoom;
 	      var mapOptions = {

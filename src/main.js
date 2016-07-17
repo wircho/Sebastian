@@ -190,6 +190,7 @@ const ACTIONS = {
   DISPLAY_MAP:"DISPLAY_MAP", // No parameters
   HIDE_MAP:"HIDE_MAP", // No parameters
   UPDATE_MAP:"UPDATE_MAP", // latitude:, longitude:, zoom:
+  ENABLE_APP:"ENABLE_APP", // enabled: Bool
 }
 
 const MONTREAL_LOCATION = {latitude:45.501926,longitude:-73.563103,zoom:8};
@@ -212,6 +213,7 @@ const finishStep = step=>({type:ACTIONS.FINISH_STEP,step});
 const displayMap = ()=>({type:ACTIONS.DISPLAY_MAP});
 const hideMap = save=>({type:ACTIONS.HIDE_MAP,save});
 const updateMap = location=>({type:ACTIONS.UPDATE_MAP,location});
+const enableApp = enabled=>({type:ACTIONS.ENABLE_APP,enabled});
 
 // Reducer
 const initialState = {step:STEPS.NONE}
@@ -246,6 +248,9 @@ function app(state,action) {
       var location = mutate(oldLocation,action.location);
       return mutate(state,{map:mutate(fallback(state.map,{}),{location})});
       break;
+    case ACTIONS.ENABLE_APP:
+      return mutate(state,{app_enabled:action.enabled});
+      break;
   }
 }
 
@@ -262,10 +267,13 @@ const mapDispatchToProps = (dispatch) => ({
     if (def(map) && def(map.location)) { // There is already some map info
       dispatch(displayMap());
     } else { // There is 
+      dispatch(enableApp(false));
       getLocation().then(function(location) {
+        dispatch(enableApp(true));
         dispatch(updateMap(mutate(location,{zoom:20})));
         dispatch(displayMap());
       },function() {
+        dispatch(enableApp(true));
         dispatch(updateMap(MONTREAL_LOCATION));
         dispatch(displayMap());
       });
@@ -288,7 +296,7 @@ const mapDispatchToProps = (dispatch) => ({
 //React classes
 const App = React.createClass({
   render: function() {
-    return (<div>
+    return (<div id="inner-content" className={classNames({disabled:!fallback(this.props.app_enabled,true)})}>
       <div id="header">SOMETHING MTL</div>
       <Steps
         step={this.props.step}
@@ -376,6 +384,7 @@ const MapCanvas = React.createClass({
       return;
     }
     if (def(this.props.map) && this.props.map.visible) {
+      console.log("showing map...");
       var center = new google.maps.LatLng(this.props.map.location.latitude,this.props.map.location.longitude);
       var zoom = this.props.map.location.zoom;
       var mapOptions = {

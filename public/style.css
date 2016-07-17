@@ -7,6 +7,10 @@ body, html {
 #content {
 	text-align:center;
 }
+#inner-content.disabled {
+	pointer-events:none;
+	opacity:0.5;
+}
 #map-overlay {
 	pointer-events:none;
 }
@@ -154,6 +158,7 @@ button:disabled, textarea:disabled {
 	padding:10px;
 }
 #map-done {
+	margin-right:10px;
 }
 #map-done.disabled:after {
 	content: " (zoom in more)"
