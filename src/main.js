@@ -297,7 +297,7 @@ const mapDispatchToProps = (dispatch) => ({
 const App = React.createClass({
   render: function() {
     return (<div id="inner-content" className={classNames({disabled:!fallback(this.props.app_enabled,true)})}>
-      <div id="header">SOMETHING MTL</div>
+      <div id="header">CHER MTL,</div>
       <Steps
         step={this.props.step}
         map={this.props.map}

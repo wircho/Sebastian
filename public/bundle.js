@@ -388,7 +388,7 @@
 	      _react2.default.createElement(
 	        'div',
 	        { id: 'header' },
-	        'SOMETHING MTL'
+	        'CHER MTL,'
 	      ),
 	      _react2.default.createElement(Steps, {
 	        step: this.props.step,
