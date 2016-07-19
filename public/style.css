@@ -54,7 +54,7 @@ body, html {
 	pointer-events:all;
 }
 #header {
-	width:245px;
+	width:215px;
 	height:50px;
 	display:inline-block;
 	margin-top:50px;
@@ -75,7 +75,7 @@ body, html {
 #steps > li {
 	position:relative;
 	list-style-type: none;
-	width:220px;
+	width:190px;
 	margin:auto;
 	margin-bottom:5px;
 	padding:10px;
@@ -128,7 +128,7 @@ button, textarea {
 }
 textarea {
 	font-size:11pt;
-	width:200px;
+	width:170px;
 }
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
 	color:    gray;
