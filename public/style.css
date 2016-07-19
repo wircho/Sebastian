@@ -128,7 +128,7 @@ button, textarea {
 }
 textarea {
 	font-size:11pt;
-	width:200px;
+	width:170px;
 }
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
 	color:    gray;
