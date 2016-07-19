@@ -38,7 +38,7 @@ body, html {
 	width:100px;
 	height:100px;
 	text-align:center;
-	background-image:url(images/pin.png);
+	background-image:url(images/mtl311_pin-black.svg);
 	background-repeat:no-repeat;
 	background-position:top;
 	background-size:auto 50%;
@@ -58,7 +58,7 @@ body, html {
 	height:50px;
 	display:inline-block;
 	margin-top:50px;
-	background-image:url(images/heart.png);
+	background-image:url(images/mtl311_heart.svg);
 	background-position:left center;
 	background-repeat:no-repeat;
 	background-size:30px auto;
@@ -99,7 +99,7 @@ body, html {
 	left:-30px;
 	width:20px;
 	height:20px;
-	background-image:url(images/check.png);
+	background-image:url(images/mtl311_check.svg);
 	background-position:center;
 	background-size:100% auto;
 	background-repeat:no-repeat;
@@ -108,11 +108,11 @@ body, html {
 	opacity:0.3;
 }
 #steps > li:nth-child(1) {
-	background-image:url(images/picture.png);
+	background-image:url(images/mtl311_picture.svg);
 	background-position:5px 6px;
 }
 #steps > li:nth-child(2) {
-	background-image:url(images/location.png);
+	background-image:url(images/mtl311_pin.svg);
 	background-position:13px 12px;
 }
 #steps > li:nth-child(3) {
