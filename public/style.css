@@ -126,6 +126,7 @@ button, textarea {
 	border-radius: 2px 2px;
 	background:transparent;
 	color:black;
+	margin-top: 4px;
 }
 textarea {
 	font-size:11pt;
