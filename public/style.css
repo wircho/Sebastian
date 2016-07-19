@@ -121,8 +121,9 @@ body, html {
 }
 button, textarea {
 	border-style:solid;
-	border-color:#999597;
-	border-width:1px;
+	border-color: black;
+	border-width:2px;
+	border-radius: 2px 2px;
 	background:transparent;
 	color:black;
 }
