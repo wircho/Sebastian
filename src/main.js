@@ -378,8 +378,10 @@ const MessageStep = React.createClass({
         placeholder="message (optional)"
         disabled={!this.props.active}
       />
-      <div id="merci">MERCI,</div>
-      <input type="text" id="name" placeholder="name (optional)" disabled={!this.props.active}/>
+      <div id="merci" className={classNames({hidden:!this.props.active})}>
+        MERCI,<br/>
+        <input type="text" id="name" placeholder="name (optional)" disabled={!this.props.active}/>
+      </div>
       <button id="submit" disabled={!this.props.active}>submit</button>
     </Step>);
   }

@@ -65,13 +65,14 @@ body, html {
 	padding-left:35px;
 	text-align:left;
 	line-height: 50px;
-	font-family: 'Roboto Slab', serif;
+	font-family: 'Concert One', cursive;
 }
 #steps {
 	padding:0px;
 	margin:0px;
 	text-align:center;
 	margin-top:5px;
+
 }
 #steps > li {
 	position:relative;
@@ -126,12 +127,17 @@ button, textarea, input[type=text] {
 	border-width:2px;
 	border-radius: 2px 2px;
 	background:transparent;
-	color:black;
+	color: black;
 	margin-top: 4px;
+	font-family: 'Dosis', sans-serif;
+	
 }
 #message {
 	font-size:11pt;
 	width:170px;
+}
+#merci {
+	font-family: 'Concert One', cursive;
 }
 #name {
 	font-size:11pt;
@@ -140,10 +146,10 @@ button, textarea, input[type=text] {
 	padding-bottom:3px;
 }
 #message.tall {
-	height:170px;
+	height:100px;
 }
 #message.short {
-	height:70px;
+	height:40px;
 }
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
 	color:    gray;
@@ -164,6 +170,9 @@ button, textarea, input[type=text] {
 button {
 	cursor:pointer;
 	font-size:11pt;
+	font-family: 'Dosis', sans-serif;
+	color: black;
+
 }
 button:disabled, textarea:disabled, input[type=text]:disabled {
 	opacity:0.5;

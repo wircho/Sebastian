@@ -502,10 +502,11 @@
 	      }),
 	      _react2.default.createElement(
 	        'div',
-	        { id: 'merci' },
-	        'MERCI,'
+	        { id: 'merci', className: classNames({ hidden: !this.props.active }) },
+	        'MERCI,',
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement('input', { type: 'text', id: 'name', placeholder: 'name (optional)', disabled: !this.props.active })
 	      ),
-	      _react2.default.createElement('input', { type: 'text', id: 'name', placeholder: 'name (optional)', disabled: !this.props.active }),
 	      _react2.default.createElement(
 	        'button',
 	        { id: 'submit', disabled: !this.props.active },
