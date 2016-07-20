@@ -335,7 +335,7 @@ const Steps = React.createClass({
       />
       <MessageStep
         active={nextStep >= STEPS.MESSAGE}
-        done={nextStep > STEPS.MESSAGE}
+        done={nextStep >= STEPS.MESSAGE}
       />
     </ul>);
   }
