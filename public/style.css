@@ -129,12 +129,15 @@ button, textarea {
 	background:transparent;
 	color: black;
 	margin-top: 4px;
-
+	font-family: 'Dosis', sans-serif;
+	
 }
 textarea {
 
 	font-size:11pt;
 	width:170px;
+	
+
 }
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
 	color:    gray;
