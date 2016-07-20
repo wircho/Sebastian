@@ -94,10 +94,11 @@ body, html {
 #steps > li.done:before {
 	position:absolute;
 	content:"";
-	top:50%;
-	-ms-transform: translate(0, -50%); /* IE 9 */
-	-webkit-transform: translate(0, -50%); /* Safari */
-	transform: translate(0, -50%);
+	/*top:50%;
+	-ms-transform: translate(0, -50%);
+	-webkit-transform: translate(0, -50%);
+	transform: translate(0, -50%);*/
+	top:12px;
 	left:-30px;
 	width:20px;
 	height:20px;
@@ -130,7 +131,11 @@ button, textarea, input[type=text] {
 	color: black;
 	margin-top: 4px;
 	font-family: 'Dosis', sans-serif;
-	
+}
+#submit:enabled {
+	border-color:#ee333b;
+	background-color:#ee333b;
+	color:white;
 }
 #message {
 	font-size:11pt;
