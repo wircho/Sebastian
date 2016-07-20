@@ -494,8 +494,18 @@
 	    return _react2.default.createElement(
 	      Step,
 	      { active: this.props.active, done: this.props.done },
-	      _react2.default.createElement('textarea', { id: 'text', placeholder: 'message (optional)', disabled: !this.props.active }),
-	      _react2.default.createElement('br', null),
+	      _react2.default.createElement('textarea', {
+	        id: 'message',
+	        className: classNames({ tall: this.props.active, short: !this.props.active }),
+	        placeholder: 'message (optional)',
+	        disabled: !this.props.active
+	      }),
+	      _react2.default.createElement(
+	        'div',
+	        { id: 'merci' },
+	        'MERCI,'
+	      ),
+	      _react2.default.createElement('input', { type: 'text', id: 'name', placeholder: 'name (optional)', disabled: !this.props.active }),
 	      _react2.default.createElement(
 	        'button',
 	        { id: 'submit', disabled: !this.props.active },

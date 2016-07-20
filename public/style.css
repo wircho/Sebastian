@@ -120,7 +120,7 @@ body, html {
 	background-image:url(images/mtl311_write.svg);
 	background-position:13px 11px;
 }
-button, textarea {
+button, textarea, input[type=text] {
 	border-style:solid;
 	border-color: black;
 	border-width:2px;
@@ -129,9 +129,21 @@ button, textarea {
 	color:black;
 	margin-top: 4px;
 }
-textarea {
+#message {
 	font-size:11pt;
 	width:170px;
+}
+#name {
+	font-size:11pt;
+	width:170px;
+	padding-top:3px;
+	padding-bottom:3px;
+}
+#message.tall {
+	height:170px;
+}
+#message.short {
+	height:70px;
 }
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
 	color:    gray;
@@ -153,7 +165,7 @@ button {
 	cursor:pointer;
 	font-size:11pt;
 }
-button:disabled, textarea:disabled {
+button:disabled, textarea:disabled, input[type=text]:disabled {
 	opacity:0.5;
 	cursor:default;
 }

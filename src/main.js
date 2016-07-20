@@ -372,7 +372,14 @@ const MessageStep = React.createClass({
   },
   render: function() {
     return (<Step active={this.props.active} done={this.props.done}>
-      <textarea id="text" placeholder="message (optional)" disabled={!this.props.active}></textarea><br/>
+      <textarea
+        id="message"
+        className={classNames({tall:this.props.active,short:!this.props.active})}
+        placeholder="message (optional)"
+        disabled={!this.props.active}
+      />
+      <div id="merci">MERCI,</div>
+      <input type="text" id="name" placeholder="name (optional)" disabled={!this.props.active}/>
       <button id="submit" disabled={!this.props.active}>submit</button>
     </Step>);
   }
