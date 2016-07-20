@@ -72,6 +72,7 @@ body, html {
 	margin:0px;
 	text-align:center;
 	margin-top:5px;
+
 }
 #steps > li {
 	position:relative;
@@ -126,10 +127,12 @@ button, textarea {
 	border-width:2px;
 	border-radius: 2px 2px;
 	background:transparent;
-	color:black;
+	color: black;
 	margin-top: 4px;
+
 }
 textarea {
+
 	font-size:11pt;
 	width:170px;
 }
@@ -152,6 +155,9 @@ textarea {
 button {
 	cursor:pointer;
 	font-size:11pt;
+	font-family: 'Dosis', sans-serif;
+	color: black;
+
 }
 button:disabled, textarea:disabled {
 	opacity:0.5;
