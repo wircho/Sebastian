@@ -157,7 +157,8 @@ button, textarea, input[type=text] {
 }
 #merci {
 	font-family: 'Concert One', cursive;
-	font-size: 15px;
+	font-size: 12pt;
+	margin-top:10px;
 }
 #name {
 	font-size:11pt;
