@@ -437,7 +437,7 @@
 	      }),
 	      _react2.default.createElement(MessageStep, {
 	        active: nextStep >= STEPS.MESSAGE,
-	        done: nextStep >= STEPS.MESSAGE
+	        done: nextStep > STEPS.MESSAGE
 	      })
 	    );
 	  }
