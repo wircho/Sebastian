@@ -127,8 +127,8 @@ body, html {
 	text-align: right;
 }
 #skip {
-	border-color:black;
-	color:black;
+	border-color:darkgray;
+	color:darkgray;
 }
 button, textarea, input[type=text] {
 	border-style:solid;
