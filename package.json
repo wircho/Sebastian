@@ -28,7 +28,8 @@
     "react-dom": "^15.2.0",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
-    "webpack": "^1.13.1"
+    "webpack": "^1.13.1",
+    "wircho-utilities": "git+https://github.com/wircho/NodeUtilities.git"
   },
   "scripts": {
     "webpack-watch": "webpack -w",

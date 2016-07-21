@@ -70,153 +70,12 @@
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
+	var _wirchoUtilities = __webpack_require__(264);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var classNames = __webpack_require__(264);
+	var classNames = __webpack_require__(265);
 
-
-	//Google maps API Keys
-
-	//Utilities
-	function pad(num, size) {
-	  var s = num + "";
-	  while (s.length < size) {
-	    s = "0" + s;
-	  }return s;
-	}
-
-	function def(x) {
-	  return typeof x !== 'undefined';
-	}
-
-	function fallback(x, y) {
-	  return def(x) ? x : y;
-	}
-
-	function err(error) {
-	  if (error.constructor === Error) {
-	    return error;
-	  } else {
-	    var data = error.data;
-	    if (def(data)) {
-	      var error1 = geterr(data);
-	      if (def(error1)) {
-	        return error1;
-	      } else {
-	        try {
-	          var parsedData = JSON.parse(data);
-	        } catch (error2) {
-	          return err(data.toString());
-	        }
-	        var parsedError = geterr(parsedData);
-	        if (def(parsedError)) {
-	          return parsedError;
-	        } else {
-	          return err(data.toString());
-	        }
-	      }
-	    } else if (def(error.message)) {
-	      return Error(error.message.toString());
-	    } else {
-	      return Error(error.toString());
-	    }
-	  }
-	}
-
-	function errstr(error) {
-	  return err(error).message;
-	}
-
-	function errdict(error) {
-	  return { error: errstr(error) };
-	}
-
-	function geterr(data) {
-	  var str = def(data.errors) && data.errors.length > 0 ? data.errors[0] : data.error;
-	  if (def(str) && def(str.message)) {
-	    str = str.message;
-	  }
-	  return !def(str) ? undefined : err(str);
-	}
-
-	function projf() {
-	  var args = Array.prototype.slice.call(arguments);
-	  var f = args[0];
-	  var globalArray = args.slice(1);
-	  return function () {
-	    var args = Array.prototype.slice.call(arguments);
-	    var array = globalArray.slice();
-	    for (var i = 0; i < array.length; i += 1) {
-	      if (!def(array[i])) {
-	        array[i] = args.shift();
-	      }
-	    }
-	    array = array.concat(args);
-	    return f.apply(this, array);
-	  };
-	}
-
-	function projff() {
-	  var args = Array.prototype.slice.call(arguments);
-	  var f = args[0];
-	  var globalArray = args.slice(1);
-	  return function () {
-	    var args = Array.prototype.slice.call(arguments);
-	    var array = globalArray.map(function (x) {
-	      return def(x) ? x() : undefined;
-	    });
-	    for (var i = 0; i < array.length; i += 1) {
-	      if (!def(array[i])) {
-	        array[i] = args.shift();
-	      }
-	    }
-	    array = array.concat(args);
-	    return f.apply(this, array);
-	  };
-	}
-
-	//Object utilities
-	function mutate(object, newValues) {
-	  var copy = {};
-	  for (var property in object) {
-	    if (object.hasOwnProperty(property)) {
-	      if (!def(newValues[property])) {
-	        copy[property] = object[property];
-	      }
-	    }
-	  }
-	  for (var property in newValues) {
-	    if (newValues.hasOwnProperty(property)) {
-	      copy[property] = newValues[property];
-	    }
-	  }
-	  return copy;
-	}
-	function remove(object, key) {
-	  var keys = key.constructor === Array ? key : [key];
-	  var copy = {};
-	  for (var property in object) {
-	    if (object.hasOwnProperty(property)) {
-	      if (keys.indexOf(property) === -1) {
-	        copy[property] = object[property];
-	      }
-	    }
-	  }
-	  return copy;
-	}
-	function rotate(array, amount) {
-	  while (amount < 0) {
-	    amount += array.length;
-	  }
-	  if (amount > 0) {
-	    amount = amount % array.length;
-	    var first = array.slice(0, amount);
-	    var second = array.slice(amount);
-	    return second.concat(first);
-	  } else {
-	    return array;
-	  }
-	}
 
 	// Location utilities
 	function getLocation() {
@@ -227,21 +86,21 @@
 	      }, function (error) {
 	        switch (error.code) {
 	          case error.PERMISSION_DENIED:
-	            reject(err("User denied the request for Geolocation."));
+	            reject((0, _wirchoUtilities.err)("User denied the request for Geolocation."));
 	            break;
 	          case error.POSITION_UNAVAILABLE:
-	            reject(err("Location information is unavailable."));
+	            reject((0, _wirchoUtilities.err)("Location information is unavailable."));
 	            break;
 	          case error.TIMEOUT:
-	            reject(err("The request to get user location timed out."));
+	            reject((0, _wirchoUtilities.err)("The request to get user location timed out."));
 	            break;
 	          case error.UNKNOWN_ERROR:
-	            reject(err("An unknown error occurred."));
+	            reject((0, _wirchoUtilities.err)("An unknown error occurred."));
 	            break;
 	        }
 	      });
 	    } else {
-	      reject(err("Not supported"));
+	      reject((0, _wirchoUtilities.err)("Not supported"));
 	    }
 	  });
 	}
@@ -296,38 +155,38 @@
 	// Reducer
 	var initialState = { step: STEPS.NONE };
 	function app(state, action) {
-	  if (!def(state)) {
+	  if (!(0, _wirchoUtilities.def)(state)) {
 	    return initialState;
 	  }
 	  switch (action.type) {
 	    case ACTIONS.FINISH_STEP:
 	      if (action.step > state.step) {
-	        return mutate(state, { step: action.step });
+	        return (0, _wirchoUtilities.mutate)(state, { step: action.step });
 	      } else {
 	        return state;
 	      }
 	      break;
 	    case ACTIONS.DISPLAY_MAP:
-	      return mutate(state, { map: mutate(fallback(state.map, {}), { visible: true }) });
+	      return (0, _wirchoUtilities.mutate)(state, { map: (0, _wirchoUtilities.mutate)((0, _wirchoUtilities.fallback)(state.map, {}), { visible: true }) });
 	      break;
 	    case ACTIONS.HIDE_MAP:
 	      var location = state.map.location;
 	      var savedLocation = state.map.savedLocation;
 	      if (action.save) {
-	        return mutate(state, { map: mutate(fallback(state.map, {}), { visible: false, location: location, savedLocation: location }) });
-	      } else if (def(savedLocation)) {
-	        return mutate(state, { map: mutate(fallback(state.map, {}), { visible: false, location: savedLocation, savedLocation: savedLocation }) });
+	        return (0, _wirchoUtilities.mutate)(state, { map: (0, _wirchoUtilities.mutate)((0, _wirchoUtilities.fallback)(state.map, {}), { visible: false, location: location, savedLocation: location }) });
+	      } else if ((0, _wirchoUtilities.def)(savedLocation)) {
+	        return (0, _wirchoUtilities.mutate)(state, { map: (0, _wirchoUtilities.mutate)((0, _wirchoUtilities.fallback)(state.map, {}), { visible: false, location: savedLocation, savedLocation: savedLocation }) });
 	      } else {
-	        return mutate(state, { map: mutate(remove(fallback(state.map, {}), ["location", "savedLocation"]), { visible: false }) });
+	        return (0, _wirchoUtilities.mutate)(state, { map: (0, _wirchoUtilities.mutate)((0, _wirchoUtilities.remove)((0, _wirchoUtilities.fallback)(state.map, {}), ["location", "savedLocation"]), { visible: false }) });
 	      }
 	      break;
 	    case ACTIONS.UPDATE_MAP:
-	      var oldLocation = def(state.map) ? fallback(state.map.location, {}) : {};
-	      var location = mutate(oldLocation, action.location);
-	      return mutate(state, { map: mutate(fallback(state.map, {}), { location: location }) });
+	      var oldLocation = (0, _wirchoUtilities.def)(state.map) ? (0, _wirchoUtilities.fallback)(state.map.location, {}) : {};
+	      var location = (0, _wirchoUtilities.mutate)(oldLocation, action.location);
+	      return (0, _wirchoUtilities.mutate)(state, { map: (0, _wirchoUtilities.mutate)((0, _wirchoUtilities.fallback)(state.map, {}), { location: location }) });
 	      break;
 	    case ACTIONS.ENABLE_APP:
-	      return mutate(state, { app_enabled: action.enabled });
+	      return (0, _wirchoUtilities.mutate)(state, { app_enabled: action.enabled });
 	      break;
 	  }
 	}
@@ -349,7 +208,7 @@
 	    },
 	    clickedLocationButton: function clickedLocationButton(event, map) {
 	      event.preventDefault();
-	      if (def(map) && def(map.location)) {
+	      if ((0, _wirchoUtilities.def)(map) && (0, _wirchoUtilities.def)(map.location)) {
 	        // There is already some map info
 	        dispatch(displayMap());
 	      } else {
@@ -357,7 +216,7 @@
 	        dispatch(enableApp(false));
 	        getLocation().then(function (location) {
 	          dispatch(enableApp(true));
-	          dispatch(updateMap(mutate(location, { zoom: 20 })));
+	          dispatch(updateMap((0, _wirchoUtilities.mutate)(location, { zoom: 20 })));
 	          dispatch(displayMap());
 	        }, function () {
 	          dispatch(enableApp(true));
@@ -388,7 +247,7 @@
 	  render: function render() {
 	    return _react2.default.createElement(
 	      'div',
-	      { id: 'inner-content', className: classNames({ disabled: !fallback(this.props.app_enabled, true) }) },
+	      { id: 'inner-content', className: classNames({ disabled: !(0, _wirchoUtilities.fallback)(this.props.app_enabled, true) }) },
 	      _react2.default.createElement(
 	        'div',
 	        { id: 'header' },
@@ -422,7 +281,7 @@
 	    var nextStep = this.props.step + 1;
 	    return _react2.default.createElement(
 	      'ul',
-	      { id: 'steps', className: def(this.props.map) && this.props.map.visible ? "hidden" : "block" },
+	      { id: 'steps', className: (0, _wirchoUtilities.def)(this.props.map) && this.props.map.visible ? "hidden" : "block" },
 	      _react2.default.createElement(PictureStep, {
 	        active: nextStep >= STEPS.PICTURE,
 	        done: nextStep > STEPS.PICTURE,
@@ -482,7 +341,7 @@
 	  render: function render() {
 	    var _this = this;
 
-	    var clickedLocationButton = projff(this.props.clickedLocationButton, undefined, function () {
+	    var clickedLocationButton = (0, _wirchoUtilities.projff)(this.props.clickedLocationButton, undefined, function () {
 	      return _this.props.map;
 	    });
 	    return _react2.default.createElement(
@@ -538,11 +397,10 @@
 	  displayName: 'MapCanvas',
 
 	  componentDidUpdate: function componentDidUpdate(prevProps) {
-	    if (def(prevProps.map) && prevProps.map.visible) {
+	    if ((0, _wirchoUtilities.def)(prevProps.map) && prevProps.map.visible) {
 	      return;
 	    }
-	    if (def(this.props.map) && this.props.map.visible) {
-	      console.log("showing map...");
+	    if ((0, _wirchoUtilities.def)(this.props.map) && this.props.map.visible) {
 	      var center = new google.maps.LatLng(this.props.map.location.latitude, this.props.map.location.longitude);
 	      var zoom = this.props.map.location.zoom;
 	      var mapOptions = {
@@ -561,7 +419,7 @@
 	    }
 	  },
 	  render: function render() {
-	    if (def(this.props.map) && this.props.map.visible) {
+	    if ((0, _wirchoUtilities.def)(this.props.map) && this.props.map.visible) {
 	      return _react2.default.createElement(
 	        'div',
 	        { id: 'map-canvas-container' },
@@ -577,7 +435,7 @@
 	  displayName: 'MapOverlay',
 
 	  render: function render() {
-	    if (def(this.props.map) && this.props.map.visible) {
+	    if ((0, _wirchoUtilities.def)(this.props.map) && this.props.map.visible) {
 	      var disabled = this.props.map.location.zoom <= 17;
 	      return _react2.default.createElement(
 	        'div',
@@ -622,103 +480,6 @@
 	    _react2.default.createElement(VisibleApp, null)
 	  ), document.getElementById('content'));
 	};
-	/*
-
-	// App
-	function stepChange(i,j) {
-	  var $stepI = $("#steps > li:nth-child("+i+")");
-	  var $stepJ = $("#steps > li:nth-child("+j+")");
-	  $stepI.addClass("done");
-	  $stepJ.removeClass("disabled");
-	}
-
-	window.initedGoogleMaps = function() {
-	  $(document).ready(function() {
-	    var $steps = $("#steps");
-	    var $picInput = $("#take-picture");
-	    var $locationButton = $("#pin-location");
-	    var $locationInput = $("#location");
-	    var mapCanvasId = "map-canvas";
-	    var $mapCanvas = $("#" + mapCanvasId);
-	    var $mapOverlay = $("#map-overlay");
-	    var $mapDone = $("#map-done");
-	    var $mapCancel = $("#map-cancel");
-	    var $textArea = $("#text");
-	    var $submitButton = $("#submit");
-	    $picInput.change(function() {
-	      stepChange(1,2);
-	      $locationButton.attr("disabled",false);
-	    });
-	    var showMap = function(location,zoom) {
-	      $steps.css("display","none");
-	      $mapCanvas.css("display","");
-	      $mapOverlay.css("display","");
-	      $mapDone.unbind();
-	      $mapCancel.unbind();
-	      var center = new google.maps.LatLng(location.coords.latitude,location.coords.longitude);
-	      var mapOptions = {
-	        center: center,
-	        zoom: zoom
-	      };
-	      var map = new google.maps.Map(document.getElementById(mapCanvasId),mapOptions);
-	      var mapZoomed = function(zoom) {
-	        if (zoom > 17) {
-	          $mapDone.removeClass("disabled");
-	          $mapDone.attr("disabled",false);
-	        }else {
-	          $mapDone.addClass("disabled");
-	          $mapDone.attr("disabled",true);
-	        }
-	      }
-	      mapZoomed(zoom);
-	      map.addListener("zoom_changed",function() {
-	        map.setCenter(center);
-	        mapZoomed(map.getZoom());
-	      });
-	      map.addListener("dragend",function() {
-	        center = map.getCenter();
-	      });
-	      var storeLocation = function() {
-	        var center = map.getCenter();
-	        var string = center.lat() + "," + center.lng() + "," + map.getZoom();
-	        $locationInput.val(string);
-	      };
-	      $mapDone.click(function() {
-	        stepChange(2,3);
-	        storeLocation();
-	        $textArea.attr("disabled",false);
-	        $submitButton.attr("disabled",false);
-	        $steps.css("display","");
-	        $mapCanvas.css("display","none");
-	        $mapOverlay.css("display","none");
-	        $textArea.focus();
-	      });
-	      $mapCancel.click(function() {
-	        storeLocation();
-	        $steps.css("display","");
-	        $mapCanvas.css("display","none");
-	        $mapOverlay.css("display","none");
-	      });
-	    };
-	    $locationButton.click(function() {
-	      var locationInfo = ($locationInput.val() + "").split(",");
-	      if (locationInfo.length === 3) {
-	        var lat = locationInfo[0]*1;
-	        var lng = locationInfo[1]*1;
-	        var zoom = locationInfo[2]*1;
-	        showMap({coords:{latitude:lat,longitude:lng}},zoom);
-	      }else {
-	        getLocation().then(function(location) {
-	          showMap(location,20);
-	        },function() {
-	          showMap({coords:{latitude:45.501926,longitude:-73.563103}},8)
-	        });
-	      }
-	    });
-	  });
-	};
-
-	*/
 
 /***/ },
 /* 1 */
@@ -39884,6 +39645,156 @@
 
 /***/ },
 /* 264 */
+/***/ function(module, exports) {
+
+	//Utilities
+	function pad(num, size) {
+	  var s = num+"";
+	  while (s.length < size) s = "0" + s;
+	  return s;
+	}
+	function def(x) {
+	  return typeof x !== 'undefined';
+	}
+	function fallback(x,y) {
+	  return def(x) ? x : y;
+	}
+	function err(error) {
+	  if (error.constructor === Error) {
+	    return error;
+	  }else {
+	    var data = error.data;
+	    if (def(data)) {
+	      var error1 = geterr(data);
+	      if (def(error1)) {
+	        return error1
+	      }else {
+	        try {
+	          var parsedData = JSON.parse(data);
+	        } catch(error2) {
+	          return err(data.toString());
+	        }
+	        var parsedError = geterr(parsedData);
+	        if (def(parsedError)) {
+	          return parsedError;
+	        }else {
+	          return err(data.toString());
+	        }
+	      }
+	    }else if (def(error.message)) {
+	      return Error(error.message.toString());
+	    }else {
+	      return Error(error.toString());
+	    }
+	  }
+	}
+	function errstr(error) {
+	  return err(error).message;
+	}
+	function errdict(error) {
+	  return {error:errstr(error)};
+	}
+	function geterr(data) {
+	  var str = (def(data.errors) && data.errors.length > 0) ? data.errors[0] : data.error;
+	  if (def(str) && def(str.message)) {
+	    str = str.message;
+	  }
+	  return !def(str) ? undefined : err(str);
+	}
+	function projf() {
+	  var args = Array.prototype.slice.call(arguments);
+	  var f = args[0];
+	  var globalArray = args.slice(1);
+	  return function() {
+	    var args = Array.prototype.slice.call(arguments);
+	    var array = globalArray.slice();
+	    for (var i=0; i<array.length; i+=1) {
+	      if (!def(array[i])) {
+	        array[i] = args.shift();
+	      }
+	    }
+	    array = array.concat(args);
+	    return f.apply(this,array);
+	  }
+	}
+	function projff() {
+	  var args = Array.prototype.slice.call(arguments);
+	  var f = args[0];
+	  var globalArray = args.slice(1);
+	  return function() {
+	    var args = Array.prototype.slice.call(arguments);
+	    var array = globalArray.map(function(x){ return def(x) ? x() : undefined});
+	    for (var i=0; i<array.length; i+=1) {
+	      if (!def(array[i])) {
+	        array[i] = args.shift();
+	      }
+	    }
+	    array = array.concat(args);
+	    return f.apply(this,array);
+	  }
+	}
+	//Object utilities
+	function mutate(object,newValues) {
+	  var copy = {};
+	  for (var property in object) {
+	    if (object.hasOwnProperty(property)) {
+	      if (!def(newValues[property])) {
+	        copy[property] = object[property];
+	      }
+	    }
+	  }
+	  for (var property in newValues) {
+	    if (newValues.hasOwnProperty(property)) {
+	      copy[property] = newValues[property];
+	    }
+	  }
+	  return copy;
+	}
+	function remove(object,key) {
+	  var keys = (key.constructor === Array) ? key : [key];
+	  var copy = {};
+	  for (var property in object) {
+	    if (object.hasOwnProperty(property)) {
+	      if (keys.indexOf(property) === -1) {
+	        copy[property] = object[property];
+	      }
+	    }
+	  }
+	  return copy;
+	}
+	function rotate(array,amount) {
+	  while (amount < 0) {
+	    amount += array.length;
+	  }
+	  if (amount > 0) {
+	    amount = amount % array.length;
+	    var first = array.slice(0,amount);
+	    var second = array.slice(amount);
+	    return second.concat(first);
+	  }else {
+	    return array;
+	  }
+	}
+
+	module.exports = {
+	//Utilities
+		pad:pad,
+		def:def,
+		fallback:fallback,
+		err:err,
+		errstr:errstr,
+		errdict:errdict,
+		geterr:geterr,
+		projf:projf,
+		projff:projff,
+	//Object utilities
+		mutate:mutate,
+		remove:remove,
+		rotate:rotate
+	};
+
+/***/ },
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
