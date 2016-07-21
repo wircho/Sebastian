@@ -128,7 +128,8 @@ body, html {
 }
 #skip {
 	border-color:darkgray;
-	color:darkgray;
+	background-color: darkgray;
+	color:white;
 }
 button, textarea, input[type=text] {
 	border-style:solid;
