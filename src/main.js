@@ -349,7 +349,7 @@ const Steps = React.createClass({
 
 const Step = React.createClass({
   render: function() {
-    return (<li className={classNames({disabled:!this.props.active,done:this.props.done})}>{this.props.children}</li>);
+    return (<li id={this.props.id} className={classNames({disabled:!this.props.active,done:this.props.done})}>{this.props.children}</li>);
   }
 })
 
@@ -377,10 +377,13 @@ const MessageStep = React.createClass({
   componentDidUpdate: function(prevProps) {
     if (!prevProps.active && this.props.active) {
       $("#message").focus();
+      $("html, body").animate({
+        scrollTop: $("#message-step").offset().top - 5
+      }, 100);
     }
   },
   render: function() {
-    return (<Step active={this.props.active} done={this.props.done}>
+    return (<Step active={this.props.active} done={this.props.done} id="message-step">
       <textarea
         id="message"
         className={classNames({tall:this.props.active,short:!this.props.active})}

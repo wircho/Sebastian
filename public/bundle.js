@@ -449,7 +449,7 @@
 	  render: function render() {
 	    return _react2.default.createElement(
 	      'li',
-	      { className: classNames({ disabled: !this.props.active, done: this.props.done }) },
+	      { id: this.props.id, className: classNames({ disabled: !this.props.active, done: this.props.done }) },
 	      this.props.children
 	    );
 	  }
@@ -503,12 +503,15 @@
 	  componentDidUpdate: function componentDidUpdate(prevProps) {
 	    if (!prevProps.active && this.props.active) {
 	      (0, _jquery2.default)("#message").focus();
+	      (0, _jquery2.default)("html, body").animate({
+	        scrollTop: (0, _jquery2.default)("#message-step").offset().top - 5
+	      }, 100);
 	    }
 	  },
 	  render: function render() {
 	    return _react2.default.createElement(
 	      Step,
-	      { active: this.props.active, done: this.props.done },
+	      { active: this.props.active, done: this.props.done, id: 'message-step' },
 	      _react2.default.createElement('textarea', {
 	        id: 'message',
 	        className: classNames({ tall: this.props.active, short: !this.props.active }),
