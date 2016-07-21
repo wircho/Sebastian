@@ -487,7 +487,7 @@
 
 	  componentDidUpdate: function componentDidUpdate(prevProps) {
 	    if (!prevProps.active && this.props.active) {
-	      (0, _jquery2.default)("#text").focus();
+	      (0, _jquery2.default)("#message").focus();
 	    }
 	  },
 	  render: function render() {

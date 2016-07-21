@@ -367,7 +367,7 @@ const LocationStep = React.createClass({
 const MessageStep = React.createClass({
   componentDidUpdate: function(prevProps) {
     if (!prevProps.active && this.props.active) {
-      $("#text").focus();
+      $("#message").focus();
     }
   },
   render: function() {
