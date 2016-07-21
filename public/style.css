@@ -3,6 +3,7 @@ body, html {
 	margin:0px; 
 	font-family:sans-serif;
 	font-size:15pt;
+	font-family: 'Dosis', sans-serif;
 }
 #content {
 	text-align:center;
@@ -122,6 +123,14 @@ body, html {
 	background-image:url(images/mtl311_write.svg);
 	background-position:13px 11px;
 }
+#orskip {
+	text-align: right;
+}
+#skip {
+	border-color:darkgray;
+	background-color:darkgray;
+	color:white;
+}
 button, textarea, input[type=text] {
 	border-style:solid;
 	border-color: black;
@@ -131,6 +140,11 @@ button, textarea, input[type=text] {
 	color: black;
 	margin-top: 4px;
 	font-family: 'Dosis', sans-serif;
+}
+#pin-location:enabled {
+	border-color:#ee333b;
+	background-color:#ee333b;
+	color:white;
 }
 #submit:enabled {
 	border-color:#ee333b;

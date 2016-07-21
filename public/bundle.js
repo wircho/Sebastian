@@ -343,6 +343,10 @@
 	      event.preventDefault();
 	      dispatch(finishStep(STEPS.PICTURE));
 	    },
+	    skippedPicture: function skippedPicture(event) {
+	      event.preventDefault();
+	      dispatch(finishStep(STEPS.PICTURE));
+	    },
 	    clickedLocationButton: function clickedLocationButton(event, map) {
 	      event.preventDefault();
 	      if (def(map) && def(map.location)) {
@@ -395,6 +399,7 @@
 	        map: this.props.map,
 	        text: this.props.text,
 	        selectedPicture: this.props.selectedPicture,
+	        skippedPicture: this.props.skippedPicture,
 	        clickedLocationButton: this.props.clickedLocationButton
 	      }),
 	      _react2.default.createElement(MapCanvas, {
@@ -421,7 +426,8 @@
 	      _react2.default.createElement(PictureStep, {
 	        active: nextStep >= STEPS.PICTURE,
 	        done: nextStep > STEPS.PICTURE,
-	        selectedPicture: this.props.selectedPicture
+	        selectedPicture: this.props.selectedPicture,
+	        skippedPicture: this.props.skippedPicture
 	      }),
 	      _react2.default.createElement(LocationStep, {
 	        active: nextStep >= STEPS.LOCATION,
@@ -456,7 +462,17 @@
 	    return _react2.default.createElement(
 	      Step,
 	      { active: this.props.active, done: this.props.done },
-	      _react2.default.createElement('input', { type: 'file', id: 'take-picture', accept: 'image/*', onChange: this.props.selectedPicture })
+	      _react2.default.createElement('input', { type: 'file', id: 'take-picture', accept: 'image/*', onChange: this.props.selectedPicture }),
+	      _react2.default.createElement(
+	        'div',
+	        { id: 'orskip', className: classNames({ hidden: this.props.done }) },
+	        'or ',
+	        _react2.default.createElement(
+	          'button',
+	          { id: 'skip', onClick: this.props.skippedPicture },
+	          'skip'
+	        )
+	      )
 	    );
 	  }
 	});

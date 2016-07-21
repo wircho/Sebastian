@@ -262,6 +262,10 @@ const mapDispatchToProps = (dispatch) => ({
     event.preventDefault();
     dispatch(finishStep(STEPS.PICTURE));
   },
+  skippedPicture: (event) => {
+    event.preventDefault();
+    dispatch(finishStep(STEPS.PICTURE));
+  },
   clickedLocationButton: (event,map) => {
     event.preventDefault();
     if (def(map) && def(map.location)) { // There is already some map info
@@ -303,6 +307,7 @@ const App = React.createClass({
         map={this.props.map}
         text={this.props.text}
         selectedPicture={this.props.selectedPicture}
+        skippedPicture={this.props.skippedPicture}
         clickedLocationButton={this.props.clickedLocationButton}
       />
       <MapCanvas
@@ -326,6 +331,7 @@ const Steps = React.createClass({
         active={nextStep >= STEPS.PICTURE}
         done={nextStep > STEPS.PICTURE} 
         selectedPicture={this.props.selectedPicture}
+        skippedPicture={this.props.skippedPicture}
       />
       <LocationStep
         active={nextStep >= STEPS.LOCATION}
@@ -351,6 +357,9 @@ const PictureStep = React.createClass({
   render: function() {
     return (<Step active={this.props.active} done={this.props.done}>
       <input type="file" id="take-picture" accept="image/*" onChange={this.props.selectedPicture}/>
+      <div id="orskip" className={classNames({hidden:this.props.done})}>
+        or <button id="skip" onClick={this.props.skippedPicture}>skip</button>
+      </div>
     </Step>);
   }
 });
