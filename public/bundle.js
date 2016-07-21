@@ -594,7 +594,7 @@
 	              disabled: disabled,
 	              onClick: this.props.clickedMapDoneButton
 	            },
-	            'Done'
+	            'done'
 	          ),
 	          _react2.default.createElement(
 	            'button',
@@ -602,7 +602,7 @@
 	              id: 'map-cancel',
 	              onClick: this.props.clickedMapCancelButton
 	            },
-	            'Cancel'
+	            'cancel'
 	          )
 	        )
 	      );

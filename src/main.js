@@ -444,11 +444,11 @@ const MapOverlay = React.createClass({
             className={disabled ? "disabled" : undefined}
             disabled={disabled}
             onClick={this.props.clickedMapDoneButton}
-          >Done</button>
+          >done</button>
           <button
             id="map-cancel"
             onClick={this.props.clickedMapCancelButton}
-          >Cancel</button>
+          >cancel</button>
         </div>
       </div>);
     }else {

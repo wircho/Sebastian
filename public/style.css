@@ -200,7 +200,9 @@ button:disabled, textarea:disabled, input[type=text]:disabled {
 	cursor:default;
 }
 #map-done, #map-cancel {
-	background:white;
+	border-color:#ee333b;
+	background-color:#ee333b;
+	color:white;
 	padding:10px;
 }
 #map-done {
