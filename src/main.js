@@ -358,7 +358,7 @@ const PictureStep = React.createClass({
     return (<Step active={this.props.active} done={this.props.done}>
       <input type="file" id="take-picture" accept="image/*" onChange={this.props.selectedPicture}/>
       <div id="orskip" className={classNames({hidden:this.props.done})}>
-        or <button id="skip" onClick={this.props.skippedPicture}>skip</button>
+        <button id="skip" onClick={this.props.skippedPicture}>skip</button>
       </div>
     </Step>);
   }

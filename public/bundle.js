@@ -466,7 +466,6 @@
 	      _react2.default.createElement(
 	        'div',
 	        { id: 'orskip', className: classNames({ hidden: this.props.done }) },
-	        'or ',
 	        _react2.default.createElement(
 	          'button',
 	          { id: 'skip', onClick: this.props.skippedPicture },
