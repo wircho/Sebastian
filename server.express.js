@@ -7,6 +7,7 @@ const app 					= express();
 
 //HTTP->HTTPS Redirect
 app.use(function(req, res, next) {
+	console.log("protocol is "+req.protocol);
 	if (req.protocol === "https" || req.headers.host.indexOf("localhost") === 0 || req.headers.host.indexOf("127.0.0.1") === 0) {
 		next();
 	}else {
