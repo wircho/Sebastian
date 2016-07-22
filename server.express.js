@@ -5,6 +5,15 @@ var session      			= require('express-session');
 var moment 					= require('moment');
 const app 					= express();
 
+//HTTP->HTTPS Redirect
+app.use(function(req, res, next) {
+	if (req.secure || req.headers.host.indexOf("localhost") === 0 || req.headers.host.indexOf("127.0.0.1") === 0) {
+		next();
+	}else {
+		res.redirect('https://' + req.headers.host + req.url);
+	}
+});
+
 //Babel+Webpack
 app.use('/', express.static('public'));
 
