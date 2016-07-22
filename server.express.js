@@ -10,7 +10,9 @@ app.use(function(req, res, next) {
 	if (req.secure || req.headers.host.indexOf("localhost") === 0 || req.headers.host.indexOf("127.0.0.1") === 0) {
 		next();
 	}else {
-		res.redirect('https://' + req.headers.host + req.url);
+		var url = 'https://' + req.headers.host + req.url;
+		console.log("redirecting to "+url);
+		res.redirect(url);
 	}
 });
 
