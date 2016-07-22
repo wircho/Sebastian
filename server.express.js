@@ -1,4 +1,6 @@
 import express from 'express';
+var http 					= require('http');
+var https 					= require('https');
 var bodyParser 				= require('body-parser');
 var cookieParser 			= require('cookie-parser');
 var session      			= require('express-session');
@@ -7,12 +9,12 @@ const app 					= express();
 
 //HTTP->HTTPS Redirect
 app.use(function(req, res, next) {
-	console.log("protocol is "+req.socket.encrypted);
-	if (req.protocol === "https" || req.headers.host.indexOf("localhost") === 0 || req.headers.host.indexOf("127.0.0.1") === 0) {
+	console.log("secure connection: " + req.secure);
+	if (req.secure || req.headers.host.indexOf("localhost") === 0 || req.headers.host.indexOf("127.0.0.1") === 0) {
 		next();
 	}else {
 		var url = 'https://' + req.headers.host + req.url;
-		console.log("redirecting to "+url);
+		console.log("redirecting to: " + url);
 		res.redirect(url);
 	}
 });
