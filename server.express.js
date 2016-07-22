@@ -9,7 +9,8 @@ const app 					= express();
 
 //HTTP->HTTPS Redirect
 app.use(function(req, res, next) {
-	console.log("secure connection: " + req.secure);
+	var secureHeader = req.headers['x-forwarded-proto'];
+	console.log("secure connection: " + secureHeader);
 	if (req.secure || req.headers.host.indexOf("localhost") === 0 || req.headers.host.indexOf("127.0.0.1") === 0) {
 		next();
 	}else {
