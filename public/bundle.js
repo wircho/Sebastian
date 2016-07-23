@@ -393,6 +393,8 @@
 	  }
 	});
 
+	var isTouchDevice = 'ontouchstart' in document.documentElement;
+
 	var MapCanvas = _react2.default.createClass({
 	  displayName: 'MapCanvas',
 
@@ -408,14 +410,23 @@
 	        zoom: zoom
 	      };
 	      var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-	      map.addListener("zoom_changed", function () {
-	        map.setCenter(center);
-	        this.props.mapChanged({ zoom: map.getZoom() });
-	      }.bind(this));
-	      map.addListener("dragend", function () {
-	        center = map.getCenter();
-	        this.props.mapChanged({ latitude: center.lat(), longitude: center.lng() });
-	      }.bind(this));
+	      if (isTouchDevice) {
+	        var handler = function () {
+	          center = map.getCenter();
+	          this.props.mapChanged({ zoom: map.getZoom(), latitude: center.lat(), longitude: center.lng() });
+	        }.bind(this);
+	        map.addListener("zoom_changed", handler);
+	        map.addListener("dragend", handler);
+	      } else {
+	        map.addListener("zoom_changed", function () {
+	          map.setCenter(center);
+	          this.props.mapChanged({ zoom: map.getZoom() });
+	        }.bind(this));
+	        map.addListener("dragend", function () {
+	          center = map.getCenter();
+	          this.props.mapChanged({ latitude: center.lat(), longitude: center.lng() });
+	        }.bind(this));
+	      }
 	    }
 	  },
 	  render: function render() {
