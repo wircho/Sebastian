@@ -372,7 +372,7 @@
 	        _react2.default.createElement(
 	          'button',
 	          { id: 'skip', onClick: this.props.skippedPicture },
-	          'skip'
+	          'suivant'
 	        )
 	      )
 	    );
@@ -394,7 +394,7 @@
 	      _react2.default.createElement(
 	        'button',
 	        { id: 'pin-location', disabled: !this.props.active, onClick: clickedLocationButton },
-	        'pin your location'
+	        'trouver mon emplacement'
 	      ),
 	      _react2.default.createElement(Info, { dictionary: (0, _wirchoUtilities.def)(this.props.map) ? this.props.map.savedLocation : undefined, prefix: 'location' })
 	    );
@@ -444,7 +444,7 @@
 	        id: 'message',
 	        name: 'message',
 	        className: classNames({ tall: this.props.active, short: !this.props.active }),
-	        placeholder: 'message (optional)',
+	        placeholder: 'message (optionnel)',
 	        disabled: !this.props.active,
 	        maxLength: FORM.MAX_MESSAGE
 	      }),
@@ -458,7 +458,7 @@
 	      _react2.default.createElement('input', {
 	        type: 'submit',
 	        id: 'submit',
-	        value: 'submit',
+	        value: 'envoyer',
 	        disabled: !this.props.active,
 	        onClick: this.props.clickedSubmitButton
 	      })
@@ -536,7 +536,7 @@
 	              disabled: disabled,
 	              onClick: this.props.clickedMapDoneButton
 	            },
-	            'done'
+	            'choisir'
 	          ),
 	          _react2.default.createElement(
 	            'button',
@@ -544,7 +544,7 @@
 	              id: 'map-cancel',
 	              onClick: this.props.clickedMapCancelButton
 	            },
-	            'cancel'
+	            'annuler'
 	          )
 	        )
 	      );
