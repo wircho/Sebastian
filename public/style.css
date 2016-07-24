@@ -12,6 +12,12 @@ body, html {
 	pointer-events:none;
 	opacity:0.5;
 }
+#form {
+	display:block;
+	margin:0px;
+	padding:0px;
+	border:none;
+}
 #map-overlay {
 	pointer-events:none;
 }
@@ -131,7 +137,7 @@ body, html {
 	background-color: darkgray;
 	color:white;
 }
-button, textarea, input[type=text] {
+button, textarea, input[type=text], input[type=submit] {
 	border-style:solid;
 	border-color: black;
 	border-width:2px;
@@ -188,14 +194,14 @@ button, textarea, input[type=text] {
 	color:    gray;
 	opacity:  0.5;
 }
-button {
+button, input[type=submit] {
 	cursor:pointer;
 	font-size:11pt;
 	font-family: 'Dosis', sans-serif;
 	color: black;
 
 }
-button:disabled, textarea:disabled, input[type=text]:disabled {
+button:disabled, textarea:disabled, input[type=text]:disabled, input[type=submit]:disabled {
 	opacity:0.5;
 	cursor:default;
 }

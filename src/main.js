@@ -52,12 +52,27 @@ function getLocation() {
   });
 }
 
+const FORM = {
+  MAX_MESSAGE:256,
+  MAX_NAME:128
+}
+
+function clearForm() {
+  $("#form").get(0).reset();
+}
+
+function storeMessageId(id) {
+
+}
+
 // Constants
 const STEPS = {
+  LOCKED:-1,
   NONE:0,
   PICTURE:1,
   LOCATION:2,
-  MESSAGE:3
+  MESSAGE:3,
+  ALL:3
 }
 
 const ACTIONS = {
@@ -66,6 +81,8 @@ const ACTIONS = {
   HIDE_MAP:"HIDE_MAP", // No parameters
   UPDATE_MAP:"UPDATE_MAP", // latitude:, longitude:, zoom:
   ENABLE_APP:"ENABLE_APP", // enabled: Bool
+  CLEAR_STEPS:"CLEAR_STEPS", // No parameters
+  UNDO_SUBMIT_STEP:"UNDO_SUBMIT_STEP", // No parameters
 }
 
 const MONTREAL_LOCATION = {latitude:45.501926,longitude:-73.563103,zoom:8};
@@ -89,9 +106,12 @@ const displayMap = ()=>({type:ACTIONS.DISPLAY_MAP});
 const hideMap = save=>({type:ACTIONS.HIDE_MAP,save});
 const updateMap = location=>({type:ACTIONS.UPDATE_MAP,location});
 const enableApp = enabled=>({type:ACTIONS.ENABLE_APP,enabled});
+const clearSteps = enabled=>({type:ACTIONS.CLEAR_STEPS,enabled});
+const undoSubmitStep = enabled=>({type:ACTIONS.UNDO_SUBMIT_STEP,enabled});
 
 // Reducer
-const initialState = {step:STEPS.NONE}
+const initialState = {step:STEPS.LOCKED}
+const clearState = {step:STEPS.NONE}
 function app(state,action) {
   if (!def(state)) {
     return initialState
@@ -125,6 +145,12 @@ function app(state,action) {
       break;
     case ACTIONS.ENABLE_APP:
       return mutate(state,{app_enabled:action.enabled});
+      break;
+    case ACTIONS.CLEAR_STEPS:
+      return clearState
+      break;
+    case ACTIONS.UNDO_SUBMIT_STEP:
+      return mutate(state,{step:STEPS.ALL - 1});
       break;
   }
 }
@@ -169,6 +195,10 @@ const mapDispatchToProps = (dispatch) => ({
   },
   mapChanged: (location) => {
     dispatch(updateMap(location));
+  },
+  clickedSubmitButton: (event) => {
+    // dispatch(finishStep(STEPS.ALL));
+    // Letting form submission take its course.
   }
 });
 
@@ -176,24 +206,33 @@ const mapDispatchToProps = (dispatch) => ({
 const App = React.createClass({
   render: function() {
     return (<div id="inner-content" className={classNames({disabled:!fallback(this.props.app_enabled,true)})}>
-      <div id="header">CHER MTL,</div>
-      <Steps
-        step={this.props.step}
-        map={this.props.map}
-        text={this.props.text}
-        selectedPicture={this.props.selectedPicture}
-        skippedPicture={this.props.skippedPicture}
-        clickedLocationButton={this.props.clickedLocationButton}
-      />
-      <MapCanvas
-        map={this.props.map}
-        mapChanged={this.props.mapChanged}
-      />
-      <MapOverlay
-        map={this.props.map}
-        clickedMapCancelButton={this.props.clickedMapCancelButton}
-        clickedMapDoneButton={this.props.clickedMapDoneButton}
-      />
+      <form
+        id="form"
+        ref="form"
+        action="/submit"
+        method="post"
+        encType="multipart/form-data"
+      >
+        <div id="header">CHER MTL,</div>
+        <Steps
+          step={this.props.step}
+          map={this.props.map}
+          text={this.props.text}
+          selectedPicture={this.props.selectedPicture}
+          skippedPicture={this.props.skippedPicture}
+          clickedLocationButton={this.props.clickedLocationButton}
+          clickedSubmitButton={this.props.clickedSubmitButton}
+        />
+        <MapCanvas
+          map={this.props.map}
+          mapChanged={this.props.mapChanged}
+        />
+        <MapOverlay
+          map={this.props.map}
+          clickedMapCancelButton={this.props.clickedMapCancelButton}
+          clickedMapDoneButton={this.props.clickedMapDoneButton}
+        />
+      </form>
     </div>);
   }
 });
@@ -203,20 +242,21 @@ const Steps = React.createClass({
     var nextStep = this.props.step + 1;
     return (<ul id="steps" className={(def(this.props.map) && this.props.map.visible) ? "hidden" : "block"}>
       <PictureStep 
-        active={nextStep >= STEPS.PICTURE}
+        active={nextStep >= STEPS.PICTURE && this.props.step < STEPS.ALL}
         done={nextStep > STEPS.PICTURE} 
         selectedPicture={this.props.selectedPicture}
         skippedPicture={this.props.skippedPicture}
       />
       <LocationStep
-        active={nextStep >= STEPS.LOCATION}
+        active={nextStep >= STEPS.LOCATION && this.props.step < STEPS.ALL}
         done={nextStep > STEPS.LOCATION}
         map={this.props.map}
         clickedLocationButton={this.props.clickedLocationButton}
       />
       <MessageStep
-        active={nextStep >= STEPS.MESSAGE}
+        active={nextStep >= STEPS.MESSAGE && this.props.step < STEPS.ALL}
         done={nextStep > STEPS.MESSAGE}
+        clickedSubmitButton={this.props.clickedSubmitButton}
       />
     </ul>);
   }
@@ -231,7 +271,7 @@ const Step = React.createClass({
 const PictureStep = React.createClass({
   render: function() {
     return (<Step active={this.props.active} done={this.props.done}>
-      <input type="file" id="take-picture" accept="image/*" onChange={this.props.selectedPicture}/>
+      <input type="file" id="picture" name="picture" accept="image/*" onChange={this.props.selectedPicture}/>
       <div id="orskip" className={classNames({hidden:this.props.done})}>
         <button id="skip" onClick={this.props.skippedPicture}>skip</button>
       </div>
@@ -244,9 +284,30 @@ const LocationStep = React.createClass({
     var clickedLocationButton = projff(this.props.clickedLocationButton,undefined,()=>(this.props.map));
     return (<Step active={this.props.active} done={this.props.done}>
       <button id="pin-location" disabled={!this.props.active} onClick={clickedLocationButton}>pin your location</button>
+      <Info dictionary={def(this.props.map) ? this.props.map.savedLocation : undefined} prefix="location" />
     </Step>);
   }
 });
+
+const Info = React.createClass({
+  render: function() {
+    var dictionary = this.props.dictionary;
+    var inputs = [];
+    var prefix = this.props.prefix;
+    for (var key in dictionary) {
+      if (dictionary.hasOwnProperty(key)) {
+        var id = prefix + "-" + key;
+        inputs.push(<input type="hidden" key={key} value={dictionary[key]} id={id} name={id}/>);
+      }
+    }
+    var hiddenStyle = {
+      display:"none"
+    }; 
+    return (
+      <div style={hiddenStyle}>{inputs}</div>
+    )
+  }
+})
 
 const MessageStep = React.createClass({
   componentDidUpdate: function(prevProps) {
@@ -261,15 +322,23 @@ const MessageStep = React.createClass({
     return (<Step active={this.props.active} done={this.props.done} id="message-step">
       <textarea
         id="message"
+        name="message"
         className={classNames({tall:this.props.active,short:!this.props.active})}
         placeholder="message (optional)"
         disabled={!this.props.active}
+        maxLength={FORM.MAX_MESSAGE}
       />
       <div id="merci" className={classNames({hidden:!this.props.active})}>
         MERCI,<br/>
-        <input type="text" id="name" placeholder="name (optional)" disabled={!this.props.active}/>
+        <input type="text" id="name" name="name" maxLength={FORM.MAX_NAME} placeholder="name (optional)" disabled={!this.props.active}/>
       </div>
-      <button id="submit" disabled={!this.props.active}>submit</button>
+      <input
+        type="submit"
+        id="submit"
+        value="submit"
+        disabled={!this.props.active}
+        onClick={this.props.clickedSubmitButton}
+      />
     </Step>);
   }
 });
@@ -345,9 +414,10 @@ const MapOverlay = React.createClass({
 //React / Redux connection and render
 const store = createStore(app);
 const VisibleApp = connect(mapStateToProps,mapDispatchToProps)(App);
+ReactDOM.render(
+  <Provider store={store}><VisibleApp /></Provider>,
+  document.getElementById('content')
+);
 window.initedGoogleMaps = function() {
-  ReactDOM.render(
-    <Provider store={store}><VisibleApp /></Provider>,
-    document.getElementById('content')
-  );
+  store.dispatch(finishStep(STEPS.NONE));
 };
