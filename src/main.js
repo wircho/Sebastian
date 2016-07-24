@@ -273,7 +273,7 @@ const PictureStep = React.createClass({
     return (<Step active={this.props.active} done={this.props.done}>
       <input type="file" id="picture" name="picture" accept="image/*" onChange={this.props.selectedPicture}/>
       <div id="orskip" className={classNames({hidden:this.props.done})}>
-        <button id="skip" onClick={this.props.skippedPicture}>skip</button>
+        <button id="skip" onClick={this.props.skippedPicture}>suivant</button>
       </div>
     </Step>);
   }
@@ -283,7 +283,7 @@ const LocationStep = React.createClass({
   render: function() {
     var clickedLocationButton = projff(this.props.clickedLocationButton,undefined,()=>(this.props.map));
     return (<Step active={this.props.active} done={this.props.done}>
-      <button id="pin-location" disabled={!this.props.active} onClick={clickedLocationButton}>pin your location</button>
+      <button id="pin-location" disabled={!this.props.active} onClick={clickedLocationButton}>trouver mon emplacement</button>
       <Info dictionary={def(this.props.map) ? this.props.map.savedLocation : undefined} prefix="location" />
     </Step>);
   }
@@ -324,7 +324,7 @@ const MessageStep = React.createClass({
         id="message"
         name="message"
         className={classNames({tall:this.props.active,short:!this.props.active})}
-        placeholder="message (optional)"
+        placeholder="message (optionnel)"
         disabled={!this.props.active}
         maxLength={FORM.MAX_MESSAGE}
       />
@@ -335,7 +335,7 @@ const MessageStep = React.createClass({
       <input
         type="submit"
         id="submit"
-        value="submit"
+        value="envoyer"
         disabled={!this.props.active}
         onClick={this.props.clickedSubmitButton}
       />
@@ -398,11 +398,11 @@ const MapOverlay = React.createClass({
             className={disabled ? "disabled" : undefined}
             disabled={disabled}
             onClick={this.props.clickedMapDoneButton}
-          >done</button>
+          >choisir</button>
           <button
             id="map-cancel"
             onClick={this.props.clickedMapCancelButton}
-          >cancel</button>
+          >annuler</button>
         </div>
       </div>);
     }else {
