@@ -137,7 +137,7 @@ body, html {
 	background-color: darkgray;
 	color:white;
 }
-button, textarea, input[type=text], input[type=submit] {
+button, textarea, input[type=text], input[type=submit], #sent-back, #sent-back:visited {
 	border-style:solid;
 	border-color: black;
 	border-width:2px;
@@ -146,6 +146,17 @@ button, textarea, input[type=text], input[type=submit] {
 	color: black;
 	margin-top: 4px;
 	font-family: 'Dosis', sans-serif;
+	font-size:12pt;
+}
+#sent-back, #sent-back:visited {
+	text-decoration: none;
+	display:inline-block;
+	border-color:#ee333b;
+	background-color:#ee333b;
+	color:white;
+	padding:3px;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 #pin-location:enabled {
 	border-color:#ee333b;
@@ -199,7 +210,6 @@ button, input[type=submit] {
 	font-size:11pt;
 	font-family: 'Dosis', sans-serif;
 	color: black;
-
 }
 button:disabled, textarea:disabled, input[type=text]:disabled, input[type=submit]:disabled {
 	opacity:0.5;
@@ -216,6 +226,32 @@ button:disabled, textarea:disabled, input[type=text]:disabled, input[type=submit
 }
 #map-done.disabled:after {
 	content: " (zoom in more)"
+}
+#sent-content {
+	text-align:center;
+	font-family: 'Dosis', sans-serif;
+	font-size:12pt;
+	position:relative;
+	margin-top:100px;
+}
+#sent-content:before {
+	content: "";
+	position:absolute;
+	left:50%;
+	top:-35px;
+	height:30px;
+	width:30px;
+	background-image:url(images/mtl311_heart.svg);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: auto 100%;
+	-ms-transform: translate(-50%, 0); /* IE 9 */
+	-webkit-transform: translate(-50%, 0); /* Safari */
+	transform: translate(-50%, 0);
+}
+#sent-message {
+	color:#ee333b;
+	margin-bottom:5px;
 }
 .block {
 	display:block;
