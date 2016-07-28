@@ -23,6 +23,7 @@
     "formidable": "^1.0.17",
     "immutable": "^3.8.1",
     "jquery": "^3.0.0",
+    "jquery-form": "^3.50.0",
     "json-loader": "^0.5.4",
     "mongoose": "^4.5.3",
     "react": "^15.2.0",

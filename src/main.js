@@ -6,6 +6,7 @@ import { createStore } from 'redux';
 import Immutable from 'immutable';
 var classNames = require('classnames');
 import $ from 'jquery';
+import 'jquery-form';
 import {
 //Utilities
   pad,
@@ -24,6 +25,13 @@ import {
 } from 'wircho-utilities';
 
 // Location utilities
+function nullFallback(x,y) {
+  if (def(x) && x !== null) {
+    return x;
+  }
+  return y;
+}
+
 function getLocation() {
   return new Promise(function(resolve,reject) {
     if (navigator.geolocation) {
@@ -52,6 +60,25 @@ function getLocation() {
   });
 }
 
+function submitForm(form) {
+  return new Promise(function(res,rej) {
+    $(form).ajaxSubmit({
+      dataType:"json",
+      success:function(data) {
+        var error = geterr(data);
+        if (def(error)) {
+          rej(error);
+          return;
+        }
+        res(data);
+      },
+      error:function(xhr, status, error) {
+        rej(error);
+      }
+    });
+  });
+}
+
 const FORM = {
   MAX_MESSAGE:256,
   MAX_NAME:128
@@ -61,8 +88,26 @@ function clearForm() {
   $("#form").get(0).reset();
 }
 
-function storeMessageId(id) {
+function storageAvailable(type) {
+  try {
+    var storage = window[type],
+    x = '__storage_test__';
+    storage.setItem(x, x);
+    storage.removeItem(x);
+    return true;
+  }
+  catch(e) {
+    return false;   
+  }
+}
 
+var submittedMessagesKey = 'submittedMessages';
+function storeMessageData(data) {
+  if (storageAvailable('localStorage')) {
+    var array = JSON.parse(nullFallback(localStorage.getItem(submittedMessagesKey),"[]"));
+    array.push(data);
+    localStorage.setItem(submittedMessagesKey,JSON.stringify(array));
+  }
 }
 
 // Constants
@@ -83,6 +128,7 @@ const ACTIONS = {
   ENABLE_APP:"ENABLE_APP", // enabled: Bool
   CLEAR_STEPS:"CLEAR_STEPS", // No parameters
   UNDO_SUBMIT_STEP:"UNDO_SUBMIT_STEP", // No parameters
+  DONE:"DONE" // No parameters
 }
 
 const MONTREAL_LOCATION = {latitude:45.501926,longitude:-73.563103,zoom:8};
@@ -108,6 +154,7 @@ const updateMap = location=>({type:ACTIONS.UPDATE_MAP,location});
 const enableApp = enabled=>({type:ACTIONS.ENABLE_APP,enabled});
 const clearSteps = enabled=>({type:ACTIONS.CLEAR_STEPS,enabled});
 const undoSubmitStep = enabled=>({type:ACTIONS.UNDO_SUBMIT_STEP,enabled});
+const showDone = ()=>({type:ACTIONS.DONE});
 
 // Reducer
 const initialState = {step:STEPS.LOCKED}
@@ -151,6 +198,9 @@ function app(state,action) {
       break;
     case ACTIONS.UNDO_SUBMIT_STEP:
       return mutate(state,{step:STEPS.ALL - 1});
+      break;
+    case ACTIONS.DONE:
+      return mutate(state,{done:true});
       break;
   }
 }
@@ -197,43 +247,79 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(updateMap(location));
   },
   clickedSubmitButton: (event) => {
-    // dispatch(finishStep(STEPS.ALL));
-    // Letting form submission take its course.
+    dispatch(finishStep(STEPS.ALL));
+  },
+  submitFailed: (error) => {
+    dispatch(undoSubmitStep());
+    alert("Something went wrong. Please try again. " + error.message);
+  },
+  submitted: (data) => {
+    storeMessageData(data);
+    dispatch(showDone());
+  },
+  clickedGetBack: (event) => {
+    event.preventDefault();
+    dispatch(clearSteps());
   }
 });
 
 //React classes
 const App = React.createClass({
+  componentDidMount: function() {
+    var component = this;
+    $('#form').submit(function(event) {
+      submitForm(this).then(function(data) {
+          component.props.submitted(data);
+      }, function(error) {
+          component.props.submitFailed(error);
+      });
+      event.preventDefault();
+      component.props.clickedSubmitButton();
+      return false;
+    });
+  },
   render: function() {
-    return (<div id="inner-content" className={classNames({disabled:!fallback(this.props.app_enabled,true)})}>
-      <form
-        id="form"
-        ref="form"
-        action="/submit"
-        method="post"
-        encType="multipart/form-data"
-      >
-        <div id="header">CHER MTL,</div>
-        <Steps
-          step={this.props.step}
-          map={this.props.map}
-          text={this.props.text}
-          selectedPicture={this.props.selectedPicture}
-          skippedPicture={this.props.skippedPicture}
-          clickedLocationButton={this.props.clickedLocationButton}
-          clickedSubmitButton={this.props.clickedSubmitButton}
-        />
-        <MapCanvas
-          map={this.props.map}
-          mapChanged={this.props.mapChanged}
-        />
-        <MapOverlay
-          map={this.props.map}
-          clickedMapCancelButton={this.props.clickedMapCancelButton}
-          clickedMapDoneButton={this.props.clickedMapDoneButton}
-        />
-      </form>
-    </div>);
+    return (
+      <div id="outer-content">
+        <div id="sent-content" className={classNames({hidden:!fallback(this.props.done,false)})}>
+          <div id="sent-title">Your message was sent</div>
+          <div id="sent-message">thank you!</div>
+          <a href="/" id="sent-back" onClick={this.props.clickedGetBack}>get back</a>
+        </div>
+        <div
+          id="inner-content"
+          className={classNames({disabled:!fallback(this.props.app_enabled,true),hidden:fallback(this.props.done,false)})}
+        >
+          <form
+            id="form"
+            ref="form"
+            action="/submit"
+            method="post"
+            encType="multipart/form-data"
+          >
+            <div id="header">CHER MTL,</div>
+            <Steps
+              step={this.props.step}
+              map={this.props.map}
+              text={this.props.text}
+              selectedPicture={this.props.selectedPicture}
+              skippedPicture={this.props.skippedPicture}
+              clickedLocationButton={this.props.clickedLocationButton}
+              clickedSubmitButton={this.props.clickedSubmitButton}
+            />
+            <MapCanvas
+              map={this.props.map}
+              mapChanged={this.props.mapChanged}
+            />
+            <MapOverlay
+              map={this.props.map}
+              clickedMapCancelButton={this.props.clickedMapCancelButton}
+              clickedMapDoneButton={this.props.clickedMapDoneButton}
+            />
+          </form>
+        </div>
+      </div>
+    );
   }
 });
 
@@ -337,7 +423,6 @@ const MessageStep = React.createClass({
         id="submit"
         value="envoyer"
         disabled={!this.props.active}
-        onClick={this.props.clickedSubmitButton}
       />
     </Step>);
   }

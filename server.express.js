@@ -26,6 +26,30 @@ import {
   rotate
 } from 'wircho-utilities';
 
+// Promise utilities
+function tryPromise(times,maker) {
+	return new Promise(res,rej) {
+		var promise = maker();
+		promise.then(res, function(error) {
+			if (times <= 1) {
+				rej(error);
+				return;
+			}
+			tryPromise(times-1,maker).then(res, rej);
+		});
+	}
+}
+
+// HTTP utilities
+function httpGET(url) {
+	
+}
+
+// Connections with main server
+function httpGET() {
+
+}
+
 //HTTP->HTTPS Redirect
 app.use(function(req, res, next) {
 	var secure = req.headers['x-forwarded-proto'] === "https";
@@ -41,15 +65,14 @@ app.use('/', express.static('public'));
 
 //API
 app.post('/submit', function (req, res) {
-	var proto = req.headers['x-forwarded-proto'];
 	var form = new formidable.IncomingForm();
 	form.parse(req, function(error,fields,files) {
 		if (error) {
 			req.json(errdict(error));
 			return;
 		}
-		console.log(fallback(proto,"http") + '://' + req.headers.host + "/submitted.html");
-		res.redirect(fallback(proto,"http") + '://' + req.headers.host + "/submitted.html");
+		
+		res.json({id:"1"});
 	});
 });
 
