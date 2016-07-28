@@ -40,16 +40,6 @@ function tryPromise(times,maker) {
 	}
 }
 
-// HTTP utilities
-function httpGET(url) {
-	
-}
-
-// Connections with main server
-function httpGET() {
-
-}
-
 //HTTP->HTTPS Redirect
 app.use(function(req, res, next) {
 	var secure = req.headers['x-forwarded-proto'] === "https";
