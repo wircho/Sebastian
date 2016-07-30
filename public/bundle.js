@@ -470,6 +470,13 @@
 	          },
 	          _react2.default.createElement(
 	            'div',
+	            { id: 'bubble' },
+	            'Envoie nous vos commentaires, questions, requêtes ou plaintes concernant les activités et les services de Montréal et de ses arrondissements.',
+	            _react2.default.createElement('div', { id: 'bubble-border' })
+	          ),
+	          _react2.default.createElement('br', null),
+	          _react2.default.createElement(
+	            'div',
 	            { id: 'header' },
 	            'CHER MTL,'
 	          ),

@@ -366,6 +366,9 @@ const App = React.createClass({
             method="post"
             encType="multipart/form-data"
           >
+            <div id="bubble">Envoie nous vos commentaires, questions, requ&ecirc;tes ou plaintes concernant les activit&eacute;s et les services de Montr&eacute;al et de ses arrondissements.
+              <div id="bubble-border"/>
+            </div><br/>
             <div id="header">CHER MTL,</div>
             <Steps
               step={this.props.step}

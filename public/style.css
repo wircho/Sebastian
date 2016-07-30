@@ -60,11 +60,64 @@ body, html {
 #map-buttons > button {
 	pointer-events:all;
 }
+#bubble {
+	position:relative;
+	display:inline-block;
+	margin-top:50px;
+	width:245px;
+	font-size:11pt;
+	padding-top:15px;
+	padding-bottom:35px;
+	padding-left:10px;
+	padding-right:10px;
+}
+#bubble:before {
+	position:absolute;
+	top:0px;
+	left:0px;
+	right:0px;
+	height:20px;
+	background-image:url(images/mtl311_speechbubble.svg);
+	background-position:center top;
+	background-size:100% auto;
+	background-repeat:no-repeat;
+	content:"";
+}
+#bubble:after {
+	position:absolute;
+	bottom:0px;
+	left:0px;
+	right:0px;
+	height:30px;
+	background-image:url(images/mtl311_speechbubble.svg);
+	background-position:center bottom;
+	background-size:100% auto;
+	background-repeat:no-repeat;
+	content:"";
+}
+#bubble-border {
+	position:absolute;
+	left:0px;
+	right:0px;
+	top:20px;
+	bottom:30px;
+	overflow: hidden;
+}
+#bubble-border:before {
+	position:absolute;
+	left:0px;
+	right:0px;
+	top:-10px;
+	bottom:-10px;
+    -webkit-box-shadow:inset 0px 0px 0px 3.5px #000;
+    -moz-box-shadow:inset 0px 0px 0px 3.5px #000;
+    box-shadow:inset 0px 0px 0px 3.5px #000;
+    content:"";
+}
 #header {
 	width:215px;
 	height:50px;
 	display:inline-block;
-	margin-top:50px;
 	background-image:url(images/mtl311_heart.svg);
 	background-position:left center;
 	background-repeat:no-repeat;
