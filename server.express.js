@@ -132,12 +132,18 @@ app.get('/sign-s3', function(req, res) {
 	const latitude = req.query['latitude'];
 	const longitude = req.query['longitude'];
 	const zoom = req.query['zoom'];
+	const userAgent = req.headers['user-agent'];
+	const forwardedAddress = req.headers['x-forwarded-for'];
+	const remoteAddress = req.connection.remoteAddress;
 	const json = {
 		message,
 		name,
 		latitude,
 		longitude,
-		zoom
+		zoom,
+		userAgent,
+		forwardedAddress,
+		remoteAddress
 	}
 	generateUniqueFileName(s3,ext).then(function(fileName) {
 		var jsonFileName = fileName + ".json";
