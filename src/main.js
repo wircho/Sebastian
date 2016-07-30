@@ -311,8 +311,13 @@ const mapDispatchToProps = (dispatch) => ({
   mapChanged: (location) => {
     dispatch(updateMap(location));
   },
-  clickedSubmitButton: (event) => {
+  clickedSubmitButton: (submitted,submitFailed) => {
     dispatch(finishStep(STEPS.ALL));
+    uploadData().then(function(data) {
+      submitted(data);
+    }, function(error) {
+      submitFailed(error);
+    });
   },
   submitFailed: (error) => {
     dispatch(undoSubmitStep());
@@ -334,15 +339,13 @@ const App = React.createClass({
   componentDidMount: function() {
     var component = this;
     $('#form').submit(function(event) {
-      uploadData().then(function(data) {
-          component.props.submitted(data);
-      }, function(error) {
-          component.props.submitFailed(error);
-      });
       event.preventDefault();
-      component.props.clickedSubmitButton();
       return false;
     });
+  },
+  clickedSubmitButton: function(event) {
+    event.preventDefault();
+    this.props.clickedSubmitButton(this.props.submitted,this.props.submitFailed);
   },
   render: function() {
     return (
@@ -371,7 +374,7 @@ const App = React.createClass({
               selectedPicture={this.props.selectedPicture}
               skippedPicture={this.props.skippedPicture}
               clickedLocationButton={this.props.clickedLocationButton}
-              clickedSubmitButton={this.props.clickedSubmitButton}
+              clickedSubmitButton={this.clickedSubmitButton}
             />
             <MapCanvas
               map={this.props.map}
@@ -484,12 +487,12 @@ const MessageStep = React.createClass({
         MERCI,<br/>
         <input type="text" id="name" name="name" maxLength={FORM.MAX_NAME} placeholder="name (optional)" disabled={!this.props.active}/>
       </div>
-      <input
+      <button
         type="submit"
         id="submit"
-        value="envoyer"
         disabled={!this.props.active}
-      />
+        onClick={this.props.clickedSubmitButton}
+      >envoyer</button>
     </Step>);
   }
 });

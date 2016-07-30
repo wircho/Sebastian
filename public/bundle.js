@@ -389,8 +389,13 @@
 	    mapChanged: function mapChanged(location) {
 	      dispatch(updateMap(location));
 	    },
-	    clickedSubmitButton: function clickedSubmitButton(event) {
+	    clickedSubmitButton: function clickedSubmitButton(submitted, submitFailed) {
 	      dispatch(finishStep(STEPS.ALL));
+	      uploadData().then(function (data) {
+	        submitted(data);
+	      }, function (error) {
+	        submitFailed(error);
+	      });
 	    },
 	    submitFailed: function submitFailed(error) {
 	      dispatch(undoSubmitStep());
@@ -415,15 +420,13 @@
 	  componentDidMount: function componentDidMount() {
 	    var component = this;
 	    (0, _jquery2.default)('#form').submit(function (event) {
-	      uploadData().then(function (data) {
-	        component.props.submitted(data);
-	      }, function (error) {
-	        component.props.submitFailed(error);
-	      });
 	      event.preventDefault();
-	      component.props.clickedSubmitButton();
 	      return false;
 	    });
+	  },
+	  clickedSubmitButton: function clickedSubmitButton(event) {
+	    event.preventDefault();
+	    this.props.clickedSubmitButton(this.props.submitted, this.props.submitFailed);
 	  },
 	  render: function render() {
 	    return _react2.default.createElement(
@@ -475,7 +478,7 @@
 	            selectedPicture: this.props.selectedPicture,
 	            skippedPicture: this.props.skippedPicture,
 	            clickedLocationButton: this.props.clickedLocationButton,
-	            clickedSubmitButton: this.props.clickedSubmitButton
+	            clickedSubmitButton: this.clickedSubmitButton
 	          }),
 	          _react2.default.createElement(MapCanvas, {
 	            map: this.props.map,
@@ -630,12 +633,16 @@
 	        _react2.default.createElement('br', null),
 	        _react2.default.createElement('input', { type: 'text', id: 'name', name: 'name', maxLength: FORM.MAX_NAME, placeholder: 'name (optional)', disabled: !this.props.active })
 	      ),
-	      _react2.default.createElement('input', {
-	        type: 'submit',
-	        id: 'submit',
-	        value: 'envoyer',
-	        disabled: !this.props.active
-	      })
+	      _react2.default.createElement(
+	        'button',
+	        {
+	          type: 'submit',
+	          id: 'submit',
+	          disabled: !this.props.active,
+	          onClick: this.props.clickedSubmitButton
+	        },
+	        'envoyer'
+	      )
 	    );
 	  }
 	});
