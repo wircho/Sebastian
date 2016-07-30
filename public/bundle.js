@@ -438,17 +438,19 @@
 	        _react2.default.createElement(
 	          'div',
 	          { id: 'sent-title' },
-	          'Your message was sent'
+	          'Votre message a bien',
+	          _react2.default.createElement('br', null),
+	          'été envoyé.'
 	        ),
 	        _react2.default.createElement(
 	          'div',
 	          { id: 'sent-message' },
-	          'thank you!'
+	          'merci!'
 	        ),
 	        _react2.default.createElement(
 	          'a',
 	          { href: '/', id: 'sent-back', onClick: this.props.clickedGetBack },
-	          'get back'
+	          'retour'
 	        )
 	      ),
 	      _react2.default.createElement(
