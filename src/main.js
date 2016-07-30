@@ -24,7 +24,7 @@ import {
   rotate
 } from 'wircho-utilities';
 
-// Location utilities
+// Local utilities
 function nullFallback(x,y) {
   if (def(x) && x !== null) {
     return x;
@@ -60,22 +60,90 @@ function getLocation() {
   });
 }
 
-function submitForm(form) {
+// function submitForm(form) {
+//   return new Promise(function(res,rej) {
+//     $(form).ajaxSubmit({
+//       dataType:"json",
+//       success:function(data) {
+//         var error = geterr(data);
+//         if (def(error)) {
+//           rej(error);
+//           return;
+//         }
+//         res(data);
+//       },
+//       error:function(xhr, status, error) {
+//         rej(error);
+//       }
+//     });
+//   });
+// }
+
+function apiReq(dict) {
   return new Promise(function(res,rej) {
-    $(form).ajaxSubmit({
+    $.ajax(mutate({
+      method:"GET",
       dataType:"json",
-      success:function(data) {
-        var error = geterr(data);
+      success:function(json) {
+        var error = geterr(json);
         if (def(error)) {
           rej(error);
           return;
         }
-        res(data);
+        res(json);
       },
-      error:function(xhr, status, error) {
-        rej(error);
+      error:function(xhr,status,error) {
+        rej(err(error));
       }
-    });
+    },dict));
+  });
+}
+
+function uploadData() {
+  var files = $("#picture").get(0).files;
+  var file = (def(files) && files !== null) ? files[0] : undefined;
+  file = (def(file) && file !== null) ? file : undefined;
+  console.log(file);
+  var message = $("#message").val();
+  var name = $("#name").val();
+  var latitude = $("#location-latitude").val();
+  var longitude = $("#location-longitude").val();
+  var zoom = $("#location-zoom").val();
+  var data = {
+    message,
+    name,
+    latitude,
+    longitude,
+    zoom
+  };
+  if (def(file)) {
+    data["file-name"] = file.name;
+    data["file-type"] = file.type;
+  }
+  return new Promise(function(res,rej) {
+    apiReq({url:"/sign-s3",data}).then(function(json) {
+      console.log("got signed request:");
+      console.log(json);
+      var signedRequest = json.signedRequest;
+      var url = json.url;
+      var fileName = json.fileName;
+      if (!def(signedRequest) || !def(url)) {
+        res({fileName});
+        return;
+      }
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', signedRequest);
+      xhr.onreadystatechange = () => {
+        if(xhr.readyState === 4){
+          if(xhr.status === 200){
+            res({fileName});
+          } else{
+            rej(err("Failed to upload image file."));
+          }
+        }
+      };
+      xhr.send(file);
+    },rej);
   });
 }
 
@@ -268,7 +336,7 @@ const App = React.createClass({
   componentDidMount: function() {
     var component = this;
     $('#form').submit(function(event) {
-      submitForm(this).then(function(data) {
+      uploadData().then(function(data) {
           component.props.submitted(data);
       }, function(error) {
           component.props.submitFailed(error);
@@ -359,7 +427,7 @@ const PictureStep = React.createClass({
     return (<Step active={this.props.active} done={this.props.done}>
       <input type="file" id="picture" name="picture" accept="image/*" onChange={this.props.selectedPicture}/>
       <div id="orskip" className={classNames({hidden:this.props.done})}>
-        <button id="skip" onClick={this.props.skippedPicture}>suivant</button>
+        <button id="skip" onClick={this.props.skippedPicture}>plus tard</button>
       </div>
     </Step>);
   }

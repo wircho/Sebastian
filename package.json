@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Quick alternative to calling 311",
   "dependencies": {
+    "aws-sdk": "^2.4.10",
     "babel-core": "^6.10.4",
     "babel-loader": "^6.2.4",
     "babel-plugin-transform-class-properties": "^6.10.2",
