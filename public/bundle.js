@@ -161,7 +161,6 @@
 	  var files = (0, _jquery2.default)("#picture").get(0).files;
 	  var file = (0, _wirchoUtilities.def)(files) && files !== null ? files[0] : undefined;
 	  file = (0, _wirchoUtilities.def)(file) && file !== null ? file : undefined;
-	  console.log(file);
 	  var message = (0, _jquery2.default)("#message").val();
 	  var name = (0, _jquery2.default)("#name").val();
 	  var latitude = (0, _jquery2.default)("#location-latitude").val();
@@ -180,8 +179,6 @@
 	  }
 	  return new _promise2.default(function (res, rej) {
 	    apiReq({ url: "/sign-s3", data: data }).then(function (json) {
-	      console.log("got signed request:");
-	      console.log(json);
 	      var signedRequest = json.signedRequest;
 	      var url = json.url;
 	      var fileName = json.fileName;
@@ -401,6 +398,7 @@
 	    },
 	    submitted: function submitted(data) {
 	      storeMessageData(data);
+	      clearForm();
 	      dispatch(showDone());
 	    },
 	    clickedGetBack: function clickedGetBack(event) {

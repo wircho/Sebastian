@@ -103,7 +103,6 @@ function uploadData() {
   var files = $("#picture").get(0).files;
   var file = (def(files) && files !== null) ? files[0] : undefined;
   file = (def(file) && file !== null) ? file : undefined;
-  console.log(file);
   var message = $("#message").val();
   var name = $("#name").val();
   var latitude = $("#location-latitude").val();
@@ -122,8 +121,6 @@ function uploadData() {
   }
   return new Promise(function(res,rej) {
     apiReq({url:"/sign-s3",data}).then(function(json) {
-      console.log("got signed request:");
-      console.log(json);
       var signedRequest = json.signedRequest;
       var url = json.url;
       var fileName = json.fileName;
@@ -323,6 +320,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   submitted: (data) => {
     storeMessageData(data);
+    clearForm();
     dispatch(showDone());
   },
   clickedGetBack: (event) => {

@@ -65,22 +65,15 @@ function fileExists(s3,fileName) {
 		Bucket: S3_BUCKET,
 		Key: fileName
 	};
-	console.log("0.2.1- Will check if file exists: " + fileName);
 	return new Promise(function(res,rej) {
-		console.log("0.2.2- Performing call");
 		s3.headObject(params,function(error,metadata) {
-			console.log("0.2.3- Responded call");
 			if (error) {
-				console.log("0.2.4A- Got error: " + error);
 				if (error.code === "NotFound") {
-					console.log("0.2.5A- Error code is not found");
 					res(false);
 				}else {
-					console.log("0.2.5A- Error is another kind");
 					rej(err(error));
 				}
 			}else {
-				console.log("0.2.4B- No error. File exists");
 				res(true);
 			}
 		});
@@ -100,15 +93,11 @@ function generateFileName(ext) {
 }
 function generateUniqueFileName(s3,ext) {
 	return new Promise(function(res,rej) {
-		console.log("0.1- About to create file name.");
 		var fileName = generateFileName(ext);
-		console.log("0.2- Created file name: " + fileName);
 		fileExists(s3,fileName + ".json").then(function(exists) {
 			if (exists) {
-				console.log("0.3A- File exists");
 				generateUniqueFileName(s3).then(res,rej);
 			} else {
-				console.log("0.3B- File does not exist");
 				res(fileName);
 			}
 		},rej);
@@ -150,9 +139,7 @@ app.get('/sign-s3', function(req, res) {
 		longitude,
 		zoom
 	}
-	console.log("0- Will generate file name.");
 	generateUniqueFileName(s3,ext).then(function(fileName) {
-		console.log("1- Generated file name: " + fileName);
 		var jsonFileName = fileName + ".json";
 		var params = {
 			Bucket: S3_BUCKET,
@@ -162,7 +149,6 @@ app.get('/sign-s3', function(req, res) {
 			ACL: 'public-read'
 		}
 		s3.putObject(params, function(error,data) {
-			console.log("2- Put object");
 			if (error) {
 				res.json(errdict(error));
 				return;
@@ -179,7 +165,6 @@ app.get('/sign-s3', function(req, res) {
 				ACL: 'public-read'
 			};
 			s3.getSignedUrl('putObject', params, (error, data) => {
-				console.log("3- Got signed url");
 				if (error) {
 					res.json(errdict(error));
 					return;
