@@ -63,7 +63,7 @@ body, html {
 #bubble {
 	position:relative;
 	display:inline-block;
-	margin-top:50px;
+	margin-top:15px;
 	width:245px;
 	font-size:11pt;
 	padding-top:15px;
