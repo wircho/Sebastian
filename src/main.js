@@ -351,8 +351,8 @@ const App = React.createClass({
     return (
       <div id="outer-content">
         <div id="sent-content" className={classNames({hidden:!fallback(this.props.done,false)})}>
-          <div id="sent-title">Your message was sent</div>
-          <div id="sent-message">thank you!</div>
+          <div id="sent-title">Votre message a bien<br/>&eacute;t&eacute; envoy&eacute;.</div>
+          <div id="sent-message">merci!</div>
           <a href="/" id="sent-back" onClick={this.props.clickedGetBack}>get back</a>
         </div>
         <div
