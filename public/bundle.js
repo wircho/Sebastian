@@ -472,8 +472,6 @@
 	    this.props.clickedSubmitButton(this.props.submitted, this.props.submitFailed);
 	  },
 	  render: function render() {
-	    console.log("rendering with props");
-	    console.log(this.props);
 	    return _react2.default.createElement(
 	      'div',
 	      { id: 'outer-content' },

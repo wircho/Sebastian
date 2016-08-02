@@ -387,8 +387,6 @@ const App = React.createClass({
     this.props.clickedSubmitButton(this.props.submitted,this.props.submitFailed);
   },
   render: function() {
-    console.log("rendering with props");
-    console.log(this.props);
     return (
       <div id="outer-content">
         <div id="sent-content" className={classNames({hidden:!fallback(this.props.done,false)})}>
