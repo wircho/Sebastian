@@ -224,12 +224,31 @@
 	}
 
 	var submittedMessagesKey = 'submittedMessages';
+	var closedBubbleKey = 'bubbleIsClosed';
+
 	function storeMessageData(data) {
 	  if (storageAvailable('localStorage')) {
 	    var array = JSON.parse(nullFallback(localStorage.getItem(submittedMessagesKey), "[]"));
 	    array.push(data);
 	    localStorage.setItem(submittedMessagesKey, (0, _stringify2.default)(array));
 	  }
+	}
+
+	function storeClosedBubble(value) {
+	  if (storageAvailable('localStorage')) {
+	    if (value) {
+	      localStorage.setItem(closedBubbleKey, "true");
+	    } else {
+	      localStorage.removeItem(closedBubbleKey);
+	    }
+	  }
+	}
+
+	function getClosedBubble() {
+	  if (storageAvailable('localStorage') && localStorage.getItem(closedBubbleKey)) {
+	    return true;
+	  }
+	  return false;
 	}
 
 	// Constants
@@ -250,7 +269,9 @@
 	  ENABLE_APP: "ENABLE_APP", // enabled: Bool
 	  CLEAR_STEPS: "CLEAR_STEPS", // No parameters
 	  UNDO_SUBMIT_STEP: "UNDO_SUBMIT_STEP", // No parameters
-	  DONE: "DONE" // No parameters
+	  DONE: "DONE", // No parameters
+	  CLOSE_BUBBLE: "CLOSE_BUBBLE", // No parameters
+	  OPEN_BUBBLE: "OPEN_BUBBLE" // No parameters
 	};
 
 	var MONTREAL_LOCATION = { latitude: 45.501926, longitude: -73.563103, zoom: 8 };
@@ -293,10 +314,16 @@
 	var showDone = function showDone() {
 	  return { type: ACTIONS.DONE };
 	};
+	var closeBubble = function closeBubble() {
+	  return { type: ACTIONS.CLOSE_BUBBLE };
+	};
+	var openBubble = function openBubble() {
+	  return { type: ACTIONS.OPEN_BUBBLE };
+	};
 
 	// Reducer
-	var initialState = { step: STEPS.LOCKED };
-	var clearState = { step: STEPS.NONE };
+	var initialState = { step: STEPS.LOCKED, bubble_is_closed: getClosedBubble() };
+	var clearState = { step: STEPS.NONE }; // bubble_is_closed will be persisted anyway
 	function app(state, action) {
 	  if (!(0, _wirchoUtilities.def)(state)) {
 	    return initialState;
@@ -332,13 +359,19 @@
 	      return (0, _wirchoUtilities.mutate)(state, { app_enabled: action.enabled });
 	      break;
 	    case ACTIONS.CLEAR_STEPS:
-	      return clearState;
+	      return (0, _wirchoUtilities.mutate)(clearState, { bubble_is_closed: state.bubble_is_closed });
 	      break;
 	    case ACTIONS.UNDO_SUBMIT_STEP:
 	      return (0, _wirchoUtilities.mutate)(state, { step: STEPS.ALL - 1 });
 	      break;
 	    case ACTIONS.DONE:
 	      return (0, _wirchoUtilities.mutate)(state, { done: true });
+	      break;
+	    case ACTIONS.CLOSE_BUBBLE:
+	      return (0, _wirchoUtilities.mutate)(state, { bubble_is_closed: true });
+	      break;
+	    case ACTIONS.OPEN_BUBBLE:
+	      return (0, _wirchoUtilities.mutate)(state, { bubble_is_closed: false });
 	      break;
 	  }
 	}
@@ -409,6 +442,16 @@
 	    clickedGetBack: function clickedGetBack(event) {
 	      event.preventDefault();
 	      dispatch(clearSteps());
+	    },
+	    clickedCloseBubble: function clickedCloseBubble(event) {
+	      event.preventDefault();
+	      storeClosedBubble(true);
+	      dispatch(closeBubble());
+	    },
+	    clickedOpenBubble: function clickedOpenBubble(event) {
+	      event.preventDefault();
+	      storeClosedBubble(false);
+	      dispatch(openBubble());
 	    }
 	  };
 	};
@@ -429,6 +472,8 @@
 	    this.props.clickedSubmitButton(this.props.submitted, this.props.submitFailed);
 	  },
 	  render: function render() {
+	    console.log("rendering with props");
+	    console.log(this.props);
 	    return _react2.default.createElement(
 	      'div',
 	      { id: 'outer-content' },
@@ -470,15 +515,23 @@
 	          },
 	          _react2.default.createElement(
 	            'div',
-	            { id: 'bubble' },
-	            'Envoie nous vos commentaires, questions, requêtes ou plaintes concernant les activités et les services de Montréal et de ses arrondissements.',
-	            _react2.default.createElement('div', { id: 'bubble-border' })
+	            { id: 'bubble', className: classNames({ hidden: this.props.bubble_is_closed, "inline-block": !this.props.bubble_is_closed }) },
+	            'Envoie nous vos commentaires,',
+	            _react2.default.createElement('br', null),
+	            ' questions, requêtes ou plaintes concernant les activités et les services de Montréal et de ses arrondissements.',
+	            _react2.default.createElement('div', { id: 'bubble-border' }),
+	            _react2.default.createElement('button', { id: 'bubble-close', onClick: this.props.clickedCloseBubble })
 	          ),
 	          _react2.default.createElement('br', null),
 	          _react2.default.createElement(
 	            'div',
-	            { id: 'header' },
-	            'CHER MTL,'
+	            { id: 'header', className: classNames({ "no-bubble": this.props.bubble_is_closed }) },
+	            'CHER MTL,',
+	            _react2.default.createElement(
+	              'button',
+	              { id: 'bubble-open', onClick: this.props.clickedOpenBubble, className: classNames({ hidden: !this.props.bubble_is_closed }) },
+	              '?'
+	            )
 	          ),
 	          _react2.default.createElement(Steps, {
 	            step: this.props.step,

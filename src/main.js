@@ -167,12 +167,31 @@ function storageAvailable(type) {
 }
 
 var submittedMessagesKey = 'submittedMessages';
+var closedBubbleKey = 'bubbleIsClosed';
+
 function storeMessageData(data) {
   if (storageAvailable('localStorage')) {
     var array = JSON.parse(nullFallback(localStorage.getItem(submittedMessagesKey),"[]"));
     array.push(data);
     localStorage.setItem(submittedMessagesKey,JSON.stringify(array));
   }
+}
+
+function storeClosedBubble(value) {
+  if (storageAvailable('localStorage')) {
+    if (value) {
+      localStorage.setItem(closedBubbleKey,"true");
+    }else {
+      localStorage.removeItem(closedBubbleKey);
+    }
+  }
+}
+
+function getClosedBubble() {
+  if (storageAvailable('localStorage') && localStorage.getItem(closedBubbleKey)) {
+    return true;
+  }
+  return false;
 }
 
 // Constants
@@ -193,7 +212,9 @@ const ACTIONS = {
   ENABLE_APP:"ENABLE_APP", // enabled: Bool
   CLEAR_STEPS:"CLEAR_STEPS", // No parameters
   UNDO_SUBMIT_STEP:"UNDO_SUBMIT_STEP", // No parameters
-  DONE:"DONE" // No parameters
+  DONE:"DONE", // No parameters
+  CLOSE_BUBBLE:"CLOSE_BUBBLE", // No parameters
+  OPEN_BUBBLE:"OPEN_BUBBLE" // No parameters
 }
 
 const MONTREAL_LOCATION = {latitude:45.501926,longitude:-73.563103,zoom:8};
@@ -220,10 +241,12 @@ const enableApp = enabled=>({type:ACTIONS.ENABLE_APP,enabled});
 const clearSteps = enabled=>({type:ACTIONS.CLEAR_STEPS,enabled});
 const undoSubmitStep = enabled=>({type:ACTIONS.UNDO_SUBMIT_STEP,enabled});
 const showDone = ()=>({type:ACTIONS.DONE});
+const closeBubble = ()=>({type:ACTIONS.CLOSE_BUBBLE});
+const openBubble = ()=>({type:ACTIONS.OPEN_BUBBLE});
 
 // Reducer
-const initialState = {step:STEPS.LOCKED}
-const clearState = {step:STEPS.NONE}
+const initialState = {step:STEPS.LOCKED, bubble_is_closed:getClosedBubble()};
+const clearState = {step:STEPS.NONE}; // bubble_is_closed will be persisted anyway
 function app(state,action) {
   if (!def(state)) {
     return initialState
@@ -259,13 +282,19 @@ function app(state,action) {
       return mutate(state,{app_enabled:action.enabled});
       break;
     case ACTIONS.CLEAR_STEPS:
-      return clearState
+      return mutate(clearState,{bubble_is_closed:state.bubble_is_closed});
       break;
     case ACTIONS.UNDO_SUBMIT_STEP:
       return mutate(state,{step:STEPS.ALL - 1});
       break;
     case ACTIONS.DONE:
       return mutate(state,{done:true});
+      break;
+    case ACTIONS.CLOSE_BUBBLE:
+      return mutate(state,{bubble_is_closed:true});
+      break;
+    case ACTIONS.OPEN_BUBBLE:
+      return mutate(state,{bubble_is_closed:false});
       break;
   }
 }
@@ -331,6 +360,16 @@ const mapDispatchToProps = (dispatch) => ({
   clickedGetBack: (event) => {
     event.preventDefault();
     dispatch(clearSteps());
+  },
+  clickedCloseBubble: (event) => {
+    event.preventDefault();
+    storeClosedBubble(true);
+    dispatch(closeBubble());
+  },
+  clickedOpenBubble: (event) => {
+    event.preventDefault();
+    storeClosedBubble(false);
+    dispatch(openBubble());
   }
 });
 
@@ -348,6 +387,8 @@ const App = React.createClass({
     this.props.clickedSubmitButton(this.props.submitted,this.props.submitFailed);
   },
   render: function() {
+    console.log("rendering with props");
+    console.log(this.props);
     return (
       <div id="outer-content">
         <div id="sent-content" className={classNames({hidden:!fallback(this.props.done,false)})}>
@@ -366,10 +407,15 @@ const App = React.createClass({
             method="post"
             encType="multipart/form-data"
           >
-            <div id="bubble">Envoie nous vos commentaires, questions, requ&ecirc;tes ou plaintes concernant les activit&eacute;s et les services de Montr&eacute;al et de ses arrondissements.
+            <div id="bubble" className={classNames({hidden:this.props.bubble_is_closed,"inline-block":!this.props.bubble_is_closed})}>
+              Envoie nous vos commentaires,<br/> questions, requ&ecirc;tes ou plaintes concernant les activit&eacute;s et les services de Montr&eacute;al et de ses arrondissements.
               <div id="bubble-border"/>
+              <button id="bubble-close" onClick={this.props.clickedCloseBubble}/>
             </div><br/>
-            <div id="header">CHER MTL,</div>
+            <div id="header" className={classNames({"no-bubble":this.props.bubble_is_closed})}>
+              CHER MTL,
+              <button id="bubble-open" onClick={this.props.clickedOpenBubble} className={classNames({hidden:!this.props.bubble_is_closed})}>?</button>
+            </div>
             <Steps
               step={this.props.step}
               map={this.props.map}
