@@ -126,7 +126,7 @@ body, html {
 #bubble-close {
 	position:absolute;
 	top:0px;
-	right:0px;
+	right:3px;
 	width:30px;
 	height:30px;
 	background-image:url(images/mtl311_x.svg);
@@ -140,13 +140,15 @@ body, html {
 #bubble-open {
 	position:absolute;
 	top:0px;
-	bottom:0px;
+	bottom:10px;
 	right:0px;
 	width:30px;
-	color:black;
+	color:#5eb8db;
 	margin:none;
 	border:none;
 	padding:none;
+	font-size:20pt;
+	font-family: 'Concert One', cursive;
 }
 /*
 #bubble-border:before {

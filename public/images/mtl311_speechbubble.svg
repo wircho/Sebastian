@@ -12,4 +12,29 @@
 		<polygon fill="none" stroke="#5EB8DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
 		242.961,1.827 1.627,1.827 1.627,48.23 1.627,48.649 1.627,68.281 19.462,48.649 242.961,48.649 	"/>
 </g>
+<g>
+	<g>
+		
+			<path fill="#00B6D7" stroke="#00B6D7" stroke-width="1.2855" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M122.841-43.512h5.283v-1.355l-3.928-3.928l-1.355,1.964l5.283,2.777c0,0,2.845-1.626,5.69,1.761c2.845,3.387,3.387,0,3.387,0
+			s1.355,2.303-3.116,3.793l-1.219,2.033c0,0,1.626,7.585-8.67,5.96l1.287-3.641c-2.777,2.184-8.196-0.152-8.196-0.152
+			c2.845,0.813,6.909-1.897,6.909-1.897c-6.909,1.897-9.8-3.522-9.8-3.522c1.308,4.47,11.087,0.406,11.087,0.406L122.841-43.512z"/>
+	</g>
+	<g>
+		
+			<line fill="none" stroke="#262425" stroke-width="1.2855" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="131.178" y1="-45.904" x2="127.249" y2="-49.833"/>
+		
+			<path fill="none" stroke="#262425" stroke-width="1.2855" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M125.895-47.868l5.283,2.777c0,0,2.845-1.626,5.69,1.761c2.845,3.387,3.387,0,3.387,0s1.355,2.303-3.116,3.793"/>
+		
+			<line fill="none" stroke="#262425" stroke-width="1.2855" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="131.178" y1="-44.549" x2="125.895" y2="-44.549"/>
+		
+			<path fill="none" stroke="#262425" stroke-width="1.2855" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M128.536-40.35c0,0-9.778,4.064-11.087-0.406c0,0,2.891,5.419,9.8,3.522c0,0-4.064,2.709-6.909,1.897c0,0,5.419,2.336,8.196,0.152
+			"/>
+		
+			<path fill="none" stroke="#262425" stroke-width="1.2855" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M135.919-37.505c0,0,1.626,7.585-8.67,5.96"/>
+	</g>
+</g>
 </svg>
