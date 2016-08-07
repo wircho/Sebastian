@@ -406,7 +406,7 @@ const App = React.createClass({
             encType="multipart/form-data"
           >
             <div id="bubble" className={classNames({hidden:this.props.bubble_is_closed,"inline-block":!this.props.bubble_is_closed})}>
-              Envoie nous vos commentaires,<br/> questions, requ&ecirc;tes ou plaintes concernant les activit&eacute;s et les services de Montr&eacute;al et de ses arrondissements.
+              Envoyez-nous vos commentaires,<br/> questions, requ&ecirc;tes ou plaintes concernant les activit&eacute;s et les services de Montr&eacute;al et de ses arrondissements.
               <div id="bubble-border"/>
               <button id="bubble-close" onClick={this.props.clickedCloseBubble}/>
             </div><br/>
