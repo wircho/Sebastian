@@ -590,7 +590,7 @@ const MapCanvas = React.createClass({
 const MapOverlay = React.createClass({
   render: function() {
     if (def(this.props.map) && this.props.map.visible) {
-      var disabled = this.props.map.location.zoom <= 17;
+      var disabled = this.props.map.location.zoom <= 15;
       return (<div id="map-overlay">
         <div id="map-pin"></div>
         <div id="map-buttons">

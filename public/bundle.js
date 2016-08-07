@@ -514,7 +514,7 @@
 	          _react2.default.createElement(
 	            'div',
 	            { id: 'bubble', className: classNames({ hidden: this.props.bubble_is_closed, "inline-block": !this.props.bubble_is_closed }) },
-	            'Envoie nous vos commentaires,',
+	            'Envoyez-nous vos commentaires,',
 	            _react2.default.createElement('br', null),
 	            ' questions, requêtes ou plaintes concernant les activités et les services de Montréal et de ses arrondissements.',
 	            _react2.default.createElement('div', { id: 'bubble-border' }),
@@ -761,7 +761,7 @@
 
 	  render: function render() {
 	    if ((0, _wirchoUtilities.def)(this.props.map) && this.props.map.visible) {
-	      var disabled = this.props.map.location.zoom <= 17;
+	      var disabled = this.props.map.location.zoom <= 15;
 	      return _react2.default.createElement(
 	        'div',
 	        { id: 'map-overlay' },
