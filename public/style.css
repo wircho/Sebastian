@@ -331,7 +331,7 @@ button:disabled, textarea:disabled, input[type=text]:disabled, input[type=submit
 	margin-right:10px;
 }
 #map-done.disabled:after {
-	content: " (zoom in more)"
+	content: " (zoomer encore)"
 }
 #sent-content {
 	text-align:center;
