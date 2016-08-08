@@ -203,7 +203,7 @@ const Item = React.createClass({
           <b>Message:</b><br/>
           {message}<br/>
           <b>Name:</b><br/>
-          {name}<br/>
+          {name}<br/><br/>
         </li>
       );
     }else {
