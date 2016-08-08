@@ -32,6 +32,13 @@ function nullFallback(x,y) {
   return y;
 }
 
+function emptyFallback(x,y) {
+  if (def(x) && x !== null && x !== "") {
+    return x;
+  }
+  return y;
+}
+
 function getLocation() {
   return new Promise(function(resolve,reject) {
     if (navigator.geolocation) {
@@ -190,8 +197,8 @@ const Item = React.createClass({
   },
   render: function() {
     if (def(this.props.content)) {
-      var message = fallback(this.props.content.message,"(empty)");
-      var name = fallback(this.props.content.name,"(no name)");
+      var message = emptyFallback(this.props.content.message,"(empty)");
+      var name = emptyFallback(this.props.content.name,"(no name)");
       var latitude = this.props.content.latitude;
       var longitude = this.props.content.longitude;
       var zoom = this.props.content.zoom;
