@@ -275,6 +275,10 @@
 	};
 
 	var MONTREAL_LOCATION = { latitude: 45.501926, longitude: -73.563103, zoom: 8 };
+	var MONTREAL_BOUNDS = {
+	  TOP_LEFT: { latitude: 45.766313, longitude: -74.079805 },
+	  BOTTOM_RIGHT: { latitude: 45.262068, longitude: -73.281923 }
+	};
 
 	// Redux model
 	/*
@@ -516,7 +520,7 @@
 	            { id: 'bubble', className: classNames({ hidden: this.props.bubble_is_closed, "inline-block": !this.props.bubble_is_closed }) },
 	            'Envoyez-nous vos commentaires,',
 	            _react2.default.createElement('br', null),
-	            ' questions, requêtes ou plaintes concernant les activités et les services de Montréal et de ses arrondissements.',
+	            ' questions, requêtes ou plaintes concernant les services et les activités de Montréal et de ses arrondissements.',
 	            _react2.default.createElement('div', { id: 'bubble-border' }),
 	            _react2.default.createElement('button', { id: 'bubble-close', onClick: this.props.clickedCloseBubble })
 	          ),
@@ -761,7 +765,9 @@
 
 	  render: function render() {
 	    if ((0, _wirchoUtilities.def)(this.props.map) && this.props.map.visible) {
-	      var disabled = this.props.map.location.zoom <= 15;
+	      var zoomDisabled = this.props.map.location.zoom <= 15;
+	      var mtlDisabled = this.props.map.location.latitude > MONTREAL_BOUNDS.TOP_LEFT.latitude || this.props.map.location.latitude < MONTREAL_BOUNDS.BOTTOM_RIGHT.latitude || this.props.map.location.longitude < MONTREAL_BOUNDS.TOP_LEFT.longitude || this.props.map.location.longitude > MONTREAL_BOUNDS.BOTTOM_RIGHT.longitude;
+	      var disabled = zoomDisabled || mtlDisabled;
 	      return _react2.default.createElement(
 	        'div',
 	        { id: 'map-overlay' },
@@ -773,7 +779,7 @@
 	            'button',
 	            {
 	              id: 'map-done',
-	              className: disabled ? "disabled" : undefined,
+	              className: classNames({ disabled: zoomDisabled && !mtlDisabled, "mtl-disabled": mtlDisabled }),
 	              disabled: disabled,
 	              onClick: this.props.clickedMapDoneButton
 	            },

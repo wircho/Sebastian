@@ -333,6 +333,9 @@ button:disabled, textarea:disabled, input[type=text]:disabled, input[type=submit
 #map-done.disabled:after {
 	content: " (zoomer encore)"
 }
+#map-done.mtl-disabled:after {
+	content: " (reviens \00E0  montr\00E9 al)"
+}
 #sent-content {
 	text-align:center;
 	font-family: 'Dosis', sans-serif;
