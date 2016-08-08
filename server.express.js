@@ -187,6 +187,24 @@ app.get('/sign-s3', function(req, res) {
 	});
 });
 
+app.get('/all-submissions', function(req, res) {
+	const s3 = new aws.S3();
+	var params = {
+		Bucket: S3_BUCKET
+	}
+	s3.listObjects(params, function(error,data) {
+		if (error) {
+			res.json(errdict(error));
+			return;
+		}
+		var truncated = data.IsTruncated;
+		var contents = data.Contents;
+		res.json(contents.map(function(element) {
+			return {filename: element.Key};
+		}));
+	});
+});
+
 // app.post('/submit', function (req, res) {
 // 	var form = new formidable.IncomingForm();
 // 	form.parse(req, function(error,fields,files) {
