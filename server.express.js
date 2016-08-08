@@ -208,7 +208,7 @@ app.get('/all-submissions', function(req, res) {
 			return {
 				fileName: element.Key,
 				url: "https://" + S3_BUCKET + ".s3.amazonaws.com/" + element.Key,
-				date: element.LastModified.toString()
+				date: element.LastModified.toLocaleDateString({timeZone:"America/Montreal"})
 			};
 		}));
 	});
