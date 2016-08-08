@@ -148,7 +148,7 @@ const mapDispatchToProps = (dispatch) => ({
 const App = React.createClass({
   render: function() {
     if (this.props.files) {
-      items = this.props.files.map(function(file) {
+      var items = this.props.files.map(function(file) {
         return <li key={file.filename}>{file.filename}</li>
       });
       return (
