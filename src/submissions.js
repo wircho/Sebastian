@@ -120,8 +120,8 @@ const ACTIONS = {
 /*
 {
   files:[
-    {fileName:...},
-    {fileName:...},
+    {fileName:...,url:...,date:...},
+    {fileName:...,url:...,date:...},
     ...
   ],
   contents:{
@@ -167,7 +167,7 @@ const App = React.createClass({
   render: function() {
     if (this.props.files) {
       var items = this.props.files.map(function(file) {
-        return <Item key={file.fileName} fileName={file.fileName} url={file.url} content={this.props.contents[file.fileName]} updateComponentContent={this.props.updateComponentContent}/>
+        return <Item key={file.fileName} date={file.date} fileName={file.fileName} url={file.url} content={this.props.contents[file.fileName]} updateComponentContent={this.props.updateComponentContent}/>
       }.bind(this));
       return (
         <ul>{items}</ul>
@@ -204,9 +204,12 @@ const Item = React.createClass({
       var zoom = this.props.content.zoom;
       var imageURL = this.props.url.slice(0, -5);
       var locationURL = (def(latitude) && def(longitude)) ? makeLocationURL(latitude,longitude,zoom) : undefined;
+      var date = this.props.date;
       return (
         <li>
           <b><a href={imageURL} target="_blank">Image Link</a> | <a href={locationURL} target="_blank">Location Link</a></b><br/>
+          <br/><b>Sent:</b><br/>
+          {date}<br/>
           <br/><b>Message:</b><br/>
           {message}<br/>
           <br/><b>Name:</b><br/>

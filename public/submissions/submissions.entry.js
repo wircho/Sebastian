@@ -91,6 +91,13 @@
 	  return y;
 	}
 
+	function emptyFallback(x, y) {
+	  if ((0, _wirchoUtilities.def)(x) && x !== null && x !== "") {
+	    return x;
+	  }
+	  return y;
+	}
+
 	function getLocation() {
 	  return new _promise2.default(function (resolve, reject) {
 	    if (navigator.geolocation) {
@@ -170,8 +177,8 @@
 	/*
 	{
 	  files:[
-	    {fileName:...},
-	    {fileName:...},
+	    {fileName:...,url:...,date:...},
+	    {fileName:...,url:...,date:...},
 	    ...
 	  ],
 	  contents:{
@@ -227,7 +234,7 @@
 	  render: function render() {
 	    if (this.props.files) {
 	      var items = this.props.files.map(function (file) {
-	        return _react2.default.createElement(Item, { key: file.fileName, fileName: file.fileName, url: file.url, content: this.props.contents[file.fileName], updateComponentContent: this.props.updateComponentContent });
+	        return _react2.default.createElement(Item, { key: file.fileName, date: file.date, fileName: file.fileName, url: file.url, content: this.props.contents[file.fileName], updateComponentContent: this.props.updateComponentContent });
 	      }.bind(this));
 	      return _react2.default.createElement(
 	        'ul',
@@ -262,13 +269,14 @@
 	  },
 	  render: function render() {
 	    if ((0, _wirchoUtilities.def)(this.props.content)) {
-	      var message = (0, _wirchoUtilities.fallback)(this.props.content.message, "(empty)");
-	      var name = (0, _wirchoUtilities.fallback)(this.props.content.name, "(no name)");
+	      var message = emptyFallback(this.props.content.message, "(empty)");
+	      var name = emptyFallback(this.props.content.name, "(no name)");
 	      var latitude = this.props.content.latitude;
 	      var longitude = this.props.content.longitude;
 	      var zoom = this.props.content.zoom;
 	      var imageURL = this.props.url.slice(0, -5);
 	      var locationURL = (0, _wirchoUtilities.def)(latitude) && (0, _wirchoUtilities.def)(longitude) ? makeLocationURL(latitude, longitude, zoom) : undefined;
+	      var date = this.props.date;
 	      return _react2.default.createElement(
 	        'li',
 	        null,
@@ -288,6 +296,16 @@
 	          )
 	        ),
 	        _react2.default.createElement('br', null),
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement(
+	          'b',
+	          null,
+	          'Sent:'
+	        ),
+	        _react2.default.createElement('br', null),
+	        date,
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement('br', null),
 	        _react2.default.createElement(
 	          'b',
 	          null,
@@ -296,6 +314,7 @@
 	        _react2.default.createElement('br', null),
 	        message,
 	        _react2.default.createElement('br', null),
+	        _react2.default.createElement('br', null),
 	        _react2.default.createElement(
 	          'b',
 	          null,
@@ -303,6 +322,7 @@
 	        ),
 	        _react2.default.createElement('br', null),
 	        name,
+	        _react2.default.createElement('br', null),
 	        _react2.default.createElement('br', null)
 	      );
 	    } else {
