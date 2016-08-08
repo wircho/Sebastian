@@ -209,7 +209,7 @@ app.get('/all-submissions', function(req, res) {
 			return {
 				fileName: element.Key,
 				url: "https://" + S3_BUCKET + ".s3.amazonaws.com/" + element.Key,
-				date: element.LastModified.toLocaleDateString(locale) + " " + element.LastModified.toLocaleTimeString(locale)
+				date: element.LastModified.toLocaleDateString(locale) + " - " + element.LastModified.toLocaleTimeString(locale)
 			};
 		}));
 	});
