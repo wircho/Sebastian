@@ -161,7 +161,7 @@ const App = React.createClass({
     if (this.props.files) {
       var items = this.props.files.map(function(file) {
         return <Item fileName={file.fileName} url={file.url} content={this.props.contents[file.fileName]} updateComponentContent={this.props.updateComponentContent}/>
-      });
+      }.bind(this));
       return (
         <ul>{items}</ul>
       );
