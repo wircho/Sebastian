@@ -171,8 +171,8 @@
 	/*
 	{
 	  files:[
-	    {filename:...},
-	    {filename:...},
+	    {fileName:...},
+	    {fileName:...},
 	    ...
 	  ]
 	}
@@ -214,8 +214,8 @@
 	      var items = this.props.files.map(function (file) {
 	        return _react2.default.createElement(
 	          'li',
-	          { key: file.filename },
-	          file.filename
+	          { key: file.fileName },
+	          file.url
 	        );
 	      });
 	      return _react2.default.createElement(

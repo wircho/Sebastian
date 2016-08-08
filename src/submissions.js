@@ -114,8 +114,8 @@ const MONTREAL_LOCATION = {latitude:45.501926,longitude:-73.563103,zoom:8};
 /*
 {
   files:[
-    {filename:...},
-    {filename:...},
+    {fileName:...},
+    {fileName:...},
     ...
   ]
 }
@@ -149,7 +149,7 @@ const App = React.createClass({
   render: function() {
     if (this.props.files) {
       var items = this.props.files.map(function(file) {
-        return <li key={file.filename}>{file.filename}</li>
+        return <li key={file.fileName}>{file.url}</li>
       });
       return (
         <ul>{items}</ul>

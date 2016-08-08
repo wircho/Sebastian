@@ -202,11 +202,12 @@ app.get('/all-submissions', function(req, res) {
 			return element.Key.indexOf(".json") > -1;
 		});
 		contents.sort(function(a,b) {
-			return (a.LastModified < b.LastModified) ? (-1) : ((a.LastModified > b.LastModified) ? 1 : 0);
+			return (a.LastModified < b.LastModified) ? 1 : ((a.LastModified > b.LastModified) ? (-1) : 0);
 		});
 		res.json(contents.map(function(element) {
 			return {
-				filename: element.Key
+				fileName: element.Key,
+				url: "https://" + S3_BUCKET + ".s3.amazonaws.com/" + element.Key
 			};
 		}));
 	});
