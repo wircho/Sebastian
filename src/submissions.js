@@ -105,10 +105,9 @@ function storeMessageData(data) {
 }
 
 const ACTIONS = {
-  SET_FILES:"SET_FILES" // Takes one array var files
+  SET_FILES:"SET_FILES", // Takes one array var files
+  UPDATE_CONTENT:"UPDATE_CONTENT" // Takes fileName and content
 }
-
-const MONTREAL_LOCATION = {latitude:45.501926,longitude:-73.563103,zoom:8};
 
 // Redux model
 /*
@@ -117,12 +116,17 @@ const MONTREAL_LOCATION = {latitude:45.501926,longitude:-73.563103,zoom:8};
     {fileName:...},
     {fileName:...},
     ...
-  ]
+  ],
+  contents:{
+    fileName1:...
+    fileName2:...
+  }
 }
 */
 
 // Actions creators
 const setFiles = files=>({type:ACTIONS.SET_FILES,files});
+const updateContent = (fileName,content)=>({type:ACTIONS.UPDATE_CONTENT,fileName,content})
 
 // Reducer
 const initialState = {};
@@ -132,7 +136,12 @@ function app(state,action) {
   }
   switch (action.type) {
     case ACTIONS.SET_FILES:
-      return mutate(state,{files:action.files})
+      return mutate(state,{files:action.files,contents:{}})
+      break;
+    case ACTIONS.UPDATE_CONTENT:
+      var update = {};
+      update[action.fileName] = action.content;
+      return mutate(state,{contents:mutate(state.contents,update)});
       break;
   }
 }
@@ -141,7 +150,9 @@ function app(state,action) {
 const mapStateToProps = state=>state;
 
 const mapDispatchToProps = (dispatch) => ({
-  
+  updateComponentContent: function(fileName,content) {
+    dispatch(updateContent(fileName,content))
+  }
 });
 
 //React classes
@@ -149,7 +160,7 @@ const App = React.createClass({
   render: function() {
     if (this.props.files) {
       var items = this.props.files.map(function(file) {
-        return <li key={file.fileName}>{file.url}</li>
+        return <Item fileName={file.fileName} url={file.url} content={this.props.contents[file.fileName]} updateComponentContent={this.props.updateComponentContent}/>
       });
       return (
         <ul>{items}</ul>
@@ -160,6 +171,29 @@ const App = React.createClass({
       );
     }
     
+  }
+});
+
+const Item = React.createClass({
+  componentDidMount: function() {
+    if (!def(this.props.content)) {
+      apiReq(this.props.url).then(function(json) {
+        this.props.updateComponentContent(this.props.fileName,json);
+      }, function(error) {
+
+      });
+    }
+  },
+  render: function() {
+    if (def(this.props.content)) {
+      return (
+        <li>{JSON.stringify(this.props.content)}</li>
+      );
+    }else {
+      return (
+        <li>Loading {file.url}...</li>
+      );
+    }
   }
 });
 

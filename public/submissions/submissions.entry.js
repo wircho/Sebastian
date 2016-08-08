@@ -162,10 +162,9 @@
 	}
 
 	var ACTIONS = {
-	  SET_FILES: "SET_FILES" // Takes one array var files
+	  SET_FILES: "SET_FILES", // Takes one array var files
+	  UPDATE_CONTENT: "UPDATE_CONTENT" // Takes fileName and content
 	};
-
-	var MONTREAL_LOCATION = { latitude: 45.501926, longitude: -73.563103, zoom: 8 };
 
 	// Redux model
 	/*
@@ -174,13 +173,20 @@
 	    {fileName:...},
 	    {fileName:...},
 	    ...
-	  ]
+	  ],
+	  contents:{
+	    fileName1:...
+	    fileName2:...
+	  }
 	}
 	*/
 
 	// Actions creators
 	var setFiles = function setFiles(files) {
 	  return { type: ACTIONS.SET_FILES, files: files };
+	};
+	var updateContent = function updateContent(fileName, content) {
+	  return { type: ACTIONS.UPDATE_CONTENT, fileName: fileName, content: content };
 	};
 
 	// Reducer
@@ -191,7 +197,12 @@
 	  }
 	  switch (action.type) {
 	    case ACTIONS.SET_FILES:
-	      return (0, _wirchoUtilities.mutate)(state, { files: action.files });
+	      return (0, _wirchoUtilities.mutate)(state, { files: action.files, contents: {} });
+	      break;
+	    case ACTIONS.UPDATE_CONTENT:
+	      var update = {};
+	      update[action.fileName] = action.content;
+	      return (0, _wirchoUtilities.mutate)(state, { contents: (0, _wirchoUtilities.mutate)(state.contents, update) });
 	      break;
 	  }
 	}
@@ -202,7 +213,11 @@
 	};
 
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	  return {};
+	  return {
+	    updateComponentContent: function updateComponentContent(fileName, content) {
+	      dispatch(updateContent(fileName, content));
+	    }
+	  };
 	};
 
 	//React classes
@@ -212,11 +227,7 @@
 	  render: function render() {
 	    if (this.props.files) {
 	      var items = this.props.files.map(function (file) {
-	        return _react2.default.createElement(
-	          'li',
-	          { key: file.fileName },
-	          file.url
-	        );
+	        return _react2.default.createElement(Item, { fileName: file.fileName, url: file.url, content: this.props.contents[file.fileName], updateComponentContent: this.props.updateComponentContent });
 	      });
 	      return _react2.default.createElement(
 	        'ul',
@@ -228,6 +239,35 @@
 	        'div',
 	        { id: 'outer-content' },
 	        'Loading'
+	      );
+	    }
+	  }
+	});
+
+	var Item = _react2.default.createClass({
+	  displayName: 'Item',
+
+	  componentDidMount: function componentDidMount() {
+	    if (!(0, _wirchoUtilities.def)(this.props.content)) {
+	      apiReq(this.props.url).then(function (json) {
+	        this.props.updateComponentContent(this.props.fileName, json);
+	      }, function (error) {});
+	    }
+	  },
+	  render: function render() {
+	    if ((0, _wirchoUtilities.def)(this.props.content)) {
+	      return _react2.default.createElement(
+	        'li',
+	        null,
+	        (0, _stringify2.default)(this.props.content)
+	      );
+	    } else {
+	      return _react2.default.createElement(
+	        'li',
+	        null,
+	        'Loading ',
+	        file.url,
+	        '...'
 	      );
 	    }
 	  }
