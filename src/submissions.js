@@ -200,10 +200,11 @@ const Item = React.createClass({
       return (
         <li>
           <b><a href={imageURL} target="_blank">Image Link</a> | <a href={locationURL} target="_blank">Location Link</a></b><br/>
-          <b>Message:</b><br/>
+          <br/><b>Message:</b><br/>
           {message}<br/>
-          <b>Name:</b><br/>
-          {name}<br/><br/>
+          <br/><b>Name:</b><br/>
+          {name}<br/>
+          <br/>
         </li>
       );
     }else {
