@@ -174,6 +174,10 @@ const App = React.createClass({
   }
 });
 
+function makeLocationURL(latitude,longitude,zoom) {
+  return "http://maps.google.com/maps?q=" + latitude + "," + longitude + (def(zoom) ? ("&z=" + zoom) : "");
+}
+
 const Item = React.createClass({
   componentDidMount: function() {
     if (!def(this.props.content)) {
@@ -186,8 +190,21 @@ const Item = React.createClass({
   },
   render: function() {
     if (def(this.props.content)) {
+      var message = fallback(this.props.content.message,"(empty)");
+      var name = fallback(this.props.content.name,"(no name)");
+      var latitude = this.props.content.latitude;
+      var longitude = this.props.content.longitude;
+      var zoom = this.props.content.zoom;
+      var imageURL = this.props.url.slice(0, -5);
+      var locationURL = (def(latitude) && def(longitude)) ? makeLocationURL(latitude,longitude,zoom) : undefined;
       return (
-        <li>{JSON.stringify(this.props.content)}</li>
+        <li>
+          <b><a href={imageURL} target="_blank">Image Link</a> | <a href={locationURL} target="_blank">Location Link</a></b><br/>
+          <b>Message:</b><br/>
+          {message}<br/>
+          <b>Name:</b><br/>
+          {name}<br/>
+        </li>
       );
     }else {
       return (

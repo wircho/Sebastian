@@ -227,8 +227,8 @@
 	  render: function render() {
 	    if (this.props.files) {
 	      var items = this.props.files.map(function (file) {
-	        return _react2.default.createElement(Item, { fileName: file.fileName, url: file.url, content: this.props.contents[file.fileName], updateComponentContent: this.props.updateComponentContent });
-	      });
+	        return _react2.default.createElement(Item, { key: file.fileName, fileName: file.fileName, url: file.url, content: this.props.contents[file.fileName], updateComponentContent: this.props.updateComponentContent });
+	      }.bind(this));
 	      return _react2.default.createElement(
 	        'ul',
 	        null,
@@ -244,29 +244,73 @@
 	  }
 	});
 
+	function makeLocationURL(latitude, longitude, zoom) {
+	  return "http://maps.google.com/maps?q=" + latitude + "," + longitude + ((0, _wirchoUtilities.def)(zoom) ? "&z=" + zoom : "");
+	}
+
 	var Item = _react2.default.createClass({
 	  displayName: 'Item',
 
 	  componentDidMount: function componentDidMount() {
 	    if (!(0, _wirchoUtilities.def)(this.props.content)) {
-	      apiReq(this.props.url).then(function (json) {
+	      apiReq({ url: this.props.url }).then(function (json) {
 	        this.props.updateComponentContent(this.props.fileName, json);
-	      }.bind(this), function (error) {}.bind(this));
+	      }.bind(this), function (error) {
+	        console.log("Error: " + (0, _wirchoUtilities.errstr)(error));
+	      }.bind(this));
 	    }
 	  },
 	  render: function render() {
 	    if ((0, _wirchoUtilities.def)(this.props.content)) {
+	      var message = (0, _wirchoUtilities.fallback)(this.props.content.message, "(empty)");
+	      var name = (0, _wirchoUtilities.fallback)(this.props.content.name, "(no name)");
+	      var latitude = this.props.content.latitude;
+	      var longitude = this.props.content.longitude;
+	      var zoom = this.props.content.zoom;
+	      var imageURL = this.props.url.slice(0, -5);
+	      var locationURL = (0, _wirchoUtilities.def)(latitude) && (0, _wirchoUtilities.def)(longitude) ? makeLocationURL(latitude, longitude, zoom) : undefined;
 	      return _react2.default.createElement(
 	        'li',
 	        null,
-	        (0, _stringify2.default)(this.props.content)
+	        _react2.default.createElement(
+	          'b',
+	          null,
+	          _react2.default.createElement(
+	            'a',
+	            { href: imageURL, target: '_blank' },
+	            'Image Link'
+	          ),
+	          ' | ',
+	          _react2.default.createElement(
+	            'a',
+	            { href: locationURL, target: '_blank' },
+	            'Location Link'
+	          )
+	        ),
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement(
+	          'b',
+	          null,
+	          'Message:'
+	        ),
+	        _react2.default.createElement('br', null),
+	        message,
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement(
+	          'b',
+	          null,
+	          'Name:'
+	        ),
+	        _react2.default.createElement('br', null),
+	        name,
+	        _react2.default.createElement('br', null)
 	      );
 	    } else {
 	      return _react2.default.createElement(
 	        'li',
 	        null,
 	        'Loading ',
-	        file.url,
+	        this.props.url,
 	        '...'
 	      );
 	    }
