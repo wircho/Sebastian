@@ -180,7 +180,7 @@ const Item = React.createClass({
       apiReq(this.props.url).then(function(json) {
         this.props.updateComponentContent(this.props.fileName,json);
       }.bind(this), function(error) {
-
+        alert("Error: " + errstr(error));
       }.bind(this));
     }
   },
