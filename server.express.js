@@ -198,9 +198,16 @@ app.get('/all-submissions', function(req, res) {
 			return;
 		}
 		var truncated = data.IsTruncated;
-		var contents = data.Contents;
+		var contents = data.Contents.filter(function(element) {
+			return element.Key.indexOf(".json") > -1;
+		});
+		contents.sort(function(a,b) {
+			return (a.LastModified < b.LastModified) ? (-1) : ((a.LastModified > b.LastModified) ? 1 : 0);
+		});
 		res.json(contents.map(function(element) {
-			return {filename: element.Key};
+			return {
+				filename: element.Key
+			};
 		}));
 	});
 });

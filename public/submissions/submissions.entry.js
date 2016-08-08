@@ -211,7 +211,7 @@
 
 	  render: function render() {
 	    if (this.props.files) {
-	      items = this.props.files.map(function (file) {
+	      var items = this.props.files.map(function (file) {
 	        return _react2.default.createElement(
 	          'li',
 	          { key: file.filename },
