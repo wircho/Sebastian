@@ -177,10 +177,10 @@ const App = React.createClass({
 const Item = React.createClass({
   componentDidMount: function() {
     if (!def(this.props.content)) {
-      apiReq(this.props.url).then(function(json) {
+      apiReq({url:this.props.url}).then(function(json) {
         this.props.updateComponentContent(this.props.fileName,json);
       }.bind(this), function(error) {
-        alert("Error: " + errstr(error));
+        console.log("Error: " + errstr(error));
       }.bind(this));
     }
   },
