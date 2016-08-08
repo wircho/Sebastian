@@ -191,7 +191,7 @@ const Item = React.createClass({
       );
     }else {
       return (
-        <li>Loading {file.url}...</li>
+        <li>Loading {this.props.url}...</li>
       );
     }
   }
