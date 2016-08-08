@@ -179,9 +179,9 @@ const Item = React.createClass({
     if (!def(this.props.content)) {
       apiReq(this.props.url).then(function(json) {
         this.props.updateComponentContent(this.props.fileName,json);
-      }, function(error) {
+      }.bind(this), function(error) {
 
-      });
+      }.bind(this));
     }
   },
   render: function() {

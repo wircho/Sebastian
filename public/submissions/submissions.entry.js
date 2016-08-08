@@ -251,7 +251,7 @@
 	    if (!(0, _wirchoUtilities.def)(this.props.content)) {
 	      apiReq(this.props.url).then(function (json) {
 	        this.props.updateComponentContent(this.props.fileName, json);
-	      }, function (error) {});
+	      }.bind(this), function (error) {}.bind(this));
 	    }
 	  },
 	  render: function render() {
