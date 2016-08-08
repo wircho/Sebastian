@@ -170,7 +170,7 @@ const App = React.createClass({
         return <Item key={file.fileName} date={file.date} fileName={file.fileName} url={file.url} content={this.props.contents[file.fileName]} updateComponentContent={this.props.updateComponentContent}/>
       }.bind(this));
       return (
-        <ul>{items}</ul>
+        <div><h1>CHER MTL,</h1><ul>{items}</ul></div>
       );
     }else {
       return (

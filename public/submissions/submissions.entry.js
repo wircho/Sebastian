@@ -237,9 +237,18 @@
 	        return _react2.default.createElement(Item, { key: file.fileName, date: file.date, fileName: file.fileName, url: file.url, content: this.props.contents[file.fileName], updateComponentContent: this.props.updateComponentContent });
 	      }.bind(this));
 	      return _react2.default.createElement(
-	        'ul',
+	        'div',
 	        null,
-	        items
+	        _react2.default.createElement(
+	          'h1',
+	          null,
+	          'CHER MTL,'
+	        ),
+	        _react2.default.createElement(
+	          'ul',
+	          null,
+	          items
+	        )
 	      );
 	    } else {
 	      return _react2.default.createElement(
