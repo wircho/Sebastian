@@ -410,7 +410,7 @@ const App = React.createClass({
             encType="multipart/form-data"
           >
             <div id="bubble" className={classNames({hidden:this.props.bubble_is_closed,"inline-block":!this.props.bubble_is_closed})}>
-              Trop occup&eacute; pour appeler le 311 ou tweeter @MTL_311?<br/> Envoyez-nous vos commentaires ou plaintes concernant les services et les activit&eacute;s de Montr&eacute;al et de ses arrondissements.
+              Trop occup&eacute; pour appeler le 311 ou tweeter @MTL_311?<br/> Envoyez-nous vos commentaires ou plaintes concernant les services et les activit&eacute;s de la ville de Montr&eacute;al et de ses arrondissements.
               <div id="bubble-border"/>
               <button id="bubble-close" onClick={this.props.clickedCloseBubble}/>
             </div><br/>
@@ -479,7 +479,7 @@ const PictureStep = React.createClass({
     return (<Step active={this.props.active} done={this.props.done}>
       <input type="file" id="picture" name="picture" accept="image/*" onChange={this.props.selectedPicture}/>
       <div id="orskip" className={classNames({hidden:this.props.done})}>
-        <button id="skip" onClick={this.props.skippedPicture}>plus tard</button>
+        <button id="skip" onClick={this.props.skippedPicture}>pas maintenant</button>
       </div>
     </Step>);
   }
@@ -536,7 +536,7 @@ const MessageStep = React.createClass({
       />
       <div id="merci" className={classNames({hidden:!this.props.active})}>
         MERCI,<br/>
-        <input type="text" id="name" name="name" maxLength={FORM.MAX_NAME} placeholder="name (optional)" disabled={!this.props.active}/>
+        <input type="text" id="name" name="name" maxLength={FORM.MAX_NAME} placeholder="email (optionnel)" disabled={!this.props.active}/>
       </div>
       <button
         type="submit"
