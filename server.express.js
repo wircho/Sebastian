@@ -145,7 +145,10 @@ app.get('/sign-s3', function(req, res) {
 		forwardedAddress,
 		remoteAddress
 	}
+	var uniqueId = req.query['unique-id'];
 	generateUniqueFileName(s3,ext).then(function(fileName) {
+		uniqueId = fallback(uniqueId,fileName);
+		json.uniqueId = uniqueId;
 		var jsonFileName = fileName + ".json";
 		var params = {
 			Bucket: S3_BUCKET,

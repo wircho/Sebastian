@@ -166,6 +166,7 @@
 	  var latitude = (0, _jquery2.default)("#location-latitude").val();
 	  var longitude = (0, _jquery2.default)("#location-longitude").val();
 	  var zoom = (0, _jquery2.default)("#location-zoom").val();
+	  var uniqueId = getUniqueId();
 	  var data = {
 	    message: message,
 	    name: name,
@@ -173,6 +174,9 @@
 	    longitude: longitude,
 	    zoom: zoom
 	  };
+	  if ((0, _wirchoUtilities.def)(uniqueId)) {
+	    data["unique-id"] = uniqueId;
+	  }
 	  if ((0, _wirchoUtilities.def)(file)) {
 	    data["file-name"] = file.name;
 	    data["file-type"] = file.type;
@@ -225,6 +229,7 @@
 
 	var submittedMessagesKey = 'submittedMessages';
 	var closedBubbleKey = 'bubbleIsClosed';
+	var uniqueIdKey = 'uniqueId';
 
 	function storeMessageData(data) {
 	  if (storageAvailable('localStorage')) {
@@ -245,10 +250,27 @@
 	}
 
 	function getClosedBubble() {
-	  if (storageAvailable('localStorage') && localStorage.getItem(closedBubbleKey)) {
+	  if (storageAvailable('localStorage') && localStorage.getItem(closedBubbleKey) === "true") {
 	    return true;
 	  }
 	  return false;
+	}
+
+	function storeUniqueIdIfNonExistent(value) {
+	  if (storageAvailable('localStorage')) {
+	    localStorage.setItem(uniqueIdKey, value);
+	  }
+	}
+
+	function getUniqueId() {
+	  if (storageAvailable('localStorage')) {
+	    var uniqueId = localStorage.getItem(uniqueIdKey);
+	    if (uniqueId) {
+	      return uniqueId;
+	    } else {
+	      return undefined;
+	    }
+	  }
 	}
 
 	// Constants

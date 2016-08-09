@@ -108,6 +108,7 @@ function uploadData() {
   var latitude = $("#location-latitude").val();
   var longitude = $("#location-longitude").val();
   var zoom = $("#location-zoom").val();
+  var uniqueId = getUniqueId();
   var data = {
     message,
     name,
@@ -115,6 +116,9 @@ function uploadData() {
     longitude,
     zoom
   };
+  if (def(uniqueId)) {
+    data["unique-id"] = uniqueId;
+  }
   if (def(file)) {
     data["file-name"] = file.name;
     data["file-type"] = file.type;
@@ -168,6 +172,7 @@ function storageAvailable(type) {
 
 var submittedMessagesKey = 'submittedMessages';
 var closedBubbleKey = 'bubbleIsClosed';
+var uniqueIdKey = 'uniqueId';
 
 function storeMessageData(data) {
   if (storageAvailable('localStorage')) {
@@ -188,10 +193,27 @@ function storeClosedBubble(value) {
 }
 
 function getClosedBubble() {
-  if (storageAvailable('localStorage') && localStorage.getItem(closedBubbleKey)) {
+  if (storageAvailable('localStorage') && localStorage.getItem(closedBubbleKey) === "true") {
     return true;
   }
   return false;
+}
+
+function storeUniqueIdIfNonExistent(value) {
+  if (storageAvailable('localStorage')) {
+    localStorage.setItem(uniqueIdKey,value);
+  }
+}
+
+function getUniqueId() {
+  if (storageAvailable('localStorage')) {
+    var uniqueId = localStorage.getItem(uniqueIdKey);
+    if (uniqueId) {
+      return uniqueId;
+    }else {
+      return undefined;
+    }
+  }
 }
 
 // Constants
