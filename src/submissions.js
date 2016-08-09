@@ -199,7 +199,7 @@ const Item = React.createClass({
     if (def(this.props.content)) {
       var message = emptyFallback(this.props.content.message,"(empty)");
       var name = emptyFallback(this.props.content.name,"(no name)");
-      var uniqueId = emptyFallback(this.props.content.uniqueId,"(no unique id)");
+      var uniqueId = emptyFallback(this.props.content.uniqueId,"no unique id");
       var latitude = this.props.content.latitude;
       var longitude = this.props.content.longitude;
       var zoom = this.props.content.zoom;
