@@ -128,6 +128,8 @@ function uploadData() {
       var signedRequest = json.signedRequest;
       var url = json.url;
       var fileName = json.fileName;
+      var uniqueId = json.uniqueId;
+      storeUniqueIdIfNonExistent(uniqueId);
       if (!def(signedRequest) || !def(url)) {
         res({fileName});
         return;
@@ -201,7 +203,10 @@ function getClosedBubble() {
 
 function storeUniqueIdIfNonExistent(value) {
   if (storageAvailable('localStorage')) {
-    localStorage.setItem(uniqueIdKey,value);
+    var uniqueId = localStorage.getItem(uniqueIdKey);
+    if (!uniqueId) {
+      localStorage.setItem(uniqueIdKey,value);
+    }
   }
 }
 

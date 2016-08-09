@@ -163,7 +163,7 @@ app.get('/sign-s3', function(req, res) {
 				return;
 			}
 			if (!def(fileType) || !def(ext)) {
-				res.json({fileName});
+				res.json({uniqueId,fileName});
 				return;
 			}
 			var params = {
@@ -179,6 +179,7 @@ app.get('/sign-s3', function(req, res) {
 					return;
 				}
 				res.json({
+					uniqueId,
 					fileName,
 					signedRequest: data,
 					url: "https://" + S3_BUCKET + ".s3.amazonaws.com/" + fileName

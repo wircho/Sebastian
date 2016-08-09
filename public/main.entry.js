@@ -186,6 +186,8 @@
 	      var signedRequest = json.signedRequest;
 	      var url = json.url;
 	      var fileName = json.fileName;
+	      var uniqueId = json.uniqueId;
+	      storeUniqueIdIfNonExistent(uniqueId);
 	      if (!(0, _wirchoUtilities.def)(signedRequest) || !(0, _wirchoUtilities.def)(url)) {
 	        res({ fileName: fileName });
 	        return;
@@ -258,7 +260,10 @@
 
 	function storeUniqueIdIfNonExistent(value) {
 	  if (storageAvailable('localStorage')) {
-	    localStorage.setItem(uniqueIdKey, value);
+	    var uniqueId = localStorage.getItem(uniqueIdKey);
+	    if (!uniqueId) {
+	      localStorage.setItem(uniqueIdKey, value);
+	    }
 	  }
 	}
 
