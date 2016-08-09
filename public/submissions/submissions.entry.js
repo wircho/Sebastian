@@ -280,6 +280,7 @@
 	    if ((0, _wirchoUtilities.def)(this.props.content)) {
 	      var message = emptyFallback(this.props.content.message, "(empty)");
 	      var name = emptyFallback(this.props.content.name, "(no name)");
+	      var uniqueId = emptyFallback(this.props.content.uniqueId, "(no unique id)");
 	      var latitude = this.props.content.latitude;
 	      var longitude = this.props.content.longitude;
 	      var zoom = this.props.content.zoom;
@@ -331,6 +332,9 @@
 	        ),
 	        _react2.default.createElement('br', null),
 	        name,
+	        ' (',
+	        uniqueId,
+	        ')',
 	        _react2.default.createElement('br', null),
 	        _react2.default.createElement('br', null)
 	      );
