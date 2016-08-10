@@ -547,10 +547,12 @@
 	            { id: 'bubble', className: classNames({ hidden: this.props.bubble_is_closed, "inline-block": !this.props.bubble_is_closed }) },
 	            'Trop occupé pour appeler le 311 ou tweeter @MTL_311?',
 	            _react2.default.createElement('br', null),
-	            ' Envoyez-nous vos commentaires ou plaintes concernant les services de la ville et de ses arrondissements. ',
+	            ' Envoyez-nous vos commentaires ou plaintes concernant les services de la ville et de ses arrondissements.',
+	            _react2.default.createElement('br', null),
+	            ' ',
 	            _react2.default.createElement(
-	              'i',
-	              null,
+	              'span',
+	              { className: 'disclaimer' },
 	              'Nous avons aucune affiliation avec la ville de Montréal.'
 	            ),
 	            _react2.default.createElement('div', { id: 'bubble-border' }),

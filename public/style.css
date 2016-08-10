@@ -150,6 +150,11 @@ body, html {
 	font-size:20pt;
 	font-family: 'Concert One', cursive;
 }
+.disclaimer {
+	color:#ee333b;
+	font-size:70%;
+	font-style: italic;
+}
 /*
 #bubble-border:before {
 	position:absolute;
