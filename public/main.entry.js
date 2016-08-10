@@ -553,7 +553,7 @@
 	            _react2.default.createElement(
 	              'span',
 	              { className: 'disclaimer' },
-	              'Nous avons aucune affiliation avec la ville de Montréal.'
+	              'Nous n\'avons aucune affiliation avec la ville de Montréal.'
 	            ),
 	            _react2.default.createElement('div', { id: 'bubble-border' }),
 	            _react2.default.createElement('button', { id: 'bubble-close', onClick: this.props.clickedCloseBubble })
