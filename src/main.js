@@ -563,7 +563,7 @@ const MessageStep = React.createClass({
       />
       <div id="merci" className={classNames({hidden:!this.props.active})}>
         MERCI,<br/>
-        <input type="text" id="name" name="name" maxLength={FORM.MAX_NAME} placeholder="email (optionnel)" disabled={!this.props.active}/>
+        <input type="text" id="name" name="name" maxLength={FORM.MAX_NAME} placeholder="email ou nom (optionnel)" disabled={!this.props.active}/>
       </div>
       <button
         type="submit"
