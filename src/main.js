@@ -437,7 +437,7 @@ const App = React.createClass({
             encType="multipart/form-data"
           >
             <div id="bubble" className={classNames({hidden:this.props.bubble_is_closed,"inline-block":!this.props.bubble_is_closed})}>
-              Trop occup&eacute; pour appeler le 311 ou tweeter @MTL_311?<br/> Envoyez-nous vos commentaires ou plaintes concernant les services de la ville de Montr&eacute;al et de ses arrondissements.
+              Trop occup&eacute; pour appeler le 311 ou tweeter @MTL_311?<br/> Envoyez-nous vos commentaires ou plaintes concernant les services de la ville et de ses arrondissements. <i>Nous avons aucune affiliation avec la ville de Montr&eacute;al.</i>
               <div id="bubble-border"/>
               <button id="bubble-close" onClick={this.props.clickedCloseBubble}/>
             </div><br/>

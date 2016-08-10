@@ -118,9 +118,9 @@ body, html {
 	background-size:100% auto;
 	background-repeat:no-repeat;
 	content:"";
-	-ms-transform: scale(1, 5); /* IE 9 */
-	-webkit-transform: scale(1, 5); /* Safari */
-	transform: scale(1, 5);
+	-ms-transform: scale(1, 20); /* IE 9 */
+	-webkit-transform: scale(1, 20); /* Safari */
+	transform: scale(1,20);
 	pointer-events: none;
 }
 #bubble-close {

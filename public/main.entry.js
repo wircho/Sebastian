@@ -547,7 +547,12 @@
 	            { id: 'bubble', className: classNames({ hidden: this.props.bubble_is_closed, "inline-block": !this.props.bubble_is_closed }) },
 	            'Trop occupé pour appeler le 311 ou tweeter @MTL_311?',
 	            _react2.default.createElement('br', null),
-	            ' Envoyez-nous vos commentaires ou plaintes concernant les services de la ville de Montréal et de ses arrondissements.',
+	            ' Envoyez-nous vos commentaires ou plaintes concernant les services de la ville et de ses arrondissements. ',
+	            _react2.default.createElement(
+	              'i',
+	              null,
+	              'Nous avons aucune affiliation avec la ville de Montréal.'
+	            ),
 	            _react2.default.createElement('div', { id: 'bubble-border' }),
 	            _react2.default.createElement('button', { id: 'bubble-close', onClick: this.props.clickedCloseBubble })
 	          ),
@@ -722,7 +727,7 @@
 	        { id: 'merci', className: classNames({ hidden: !this.props.active }) },
 	        'MERCI,',
 	        _react2.default.createElement('br', null),
-	        _react2.default.createElement('input', { type: 'text', id: 'name', name: 'name', maxLength: FORM.MAX_NAME, placeholder: 'email (optionnel)', disabled: !this.props.active })
+	        _react2.default.createElement('input', { type: 'text', id: 'name', name: 'name', maxLength: FORM.MAX_NAME, placeholder: 'email ou nom (optionnel)', disabled: !this.props.active })
 	      ),
 	      _react2.default.createElement(
 	        'button',
