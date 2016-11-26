@@ -96,7 +96,7 @@ function generateUniqueFileName(s3,ext) {
 		var fileName = generateFileName(ext);
 		fileExists(s3,fileName + ".json").then(function(exists) {
 			if (exists) {
-				generateUniqueFileName(s3).then(res,rej);
+				generateUniqueFileName(s3,ext).then(res,rej);
 			} else {
 				res(fileName);
 			}
